@@ -4,4 +4,4 @@
 ---
 
 > [!note]
-> NOW [Client Repository](https://github.com/cbnu-now/now-client)
+> Now [Client Repository](https://github.com/cbnu-now/now-client)
