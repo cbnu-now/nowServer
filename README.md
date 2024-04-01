@@ -4,4 +4,4 @@
 ---
 
 > [!note]
-> Now [Client Repository](https://github.com/cbnu-togather/togather-client)
+> Togather [Client Repository](https://github.com/cbnu-togather/togather-client)
