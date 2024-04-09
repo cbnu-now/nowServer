@@ -46,6 +46,16 @@ dependencies {
 
     //aws
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+    // 웹소캣 Stomp
+    implementation 'org.webjars:webjars-locator-core'
+    implementation 'org.webjars:sockjs-client:1.5.1'
+    implementation 'org.webjars:stomp-websocket:2.3.4'
+    implementation 'org.webjars:bootstrap:5.2.3'
+    implementation 'org.webjars:jquery:3.6.4'
+
+    // 문자
+    implementation 'net.nurigo:sdk:4.3.0'
 }
 
 tasks.named('test') {
