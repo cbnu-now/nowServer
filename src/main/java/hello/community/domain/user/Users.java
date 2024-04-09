@@ -23,6 +23,9 @@ public class Users {
     private String phone;
     private String name;
 
+    private String Latitude;
+    private String Longitude;
+
     @Lob
     @Column(columnDefinition = "TEXT")
     private String photo;
