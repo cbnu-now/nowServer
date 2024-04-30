@@ -66,4 +66,10 @@ public class UserService {
         Long userId = Long.parseLong(username);
         return userRepository.findById(userId).get();
     }
+
+
+    public boolean nameDobuleCheck(String name) {
+        Users findedName = userRepository.findByName(name);
+        return findedName != null;
+    }
 }

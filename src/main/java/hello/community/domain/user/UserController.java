@@ -85,4 +85,16 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserInfo());
     }
 
+    @Operation(
+            summary = "닉네임 중복조회",
+            description = "닉네임을 string으로 넘기면 중복확인을 합니다. 중복이면 true, 중복이 아니면 false를 반환합니다."
+    )
+    @GetMapping("/user/doublecheck")
+    public ResponseEntity<Boolean> nameDoubleCheck(String name) {
+        boolean isExistUser = userService.nameDobuleCheck(name);
+        return ResponseEntity.ok(isExistUser);
+    }
+
+
+
 }
