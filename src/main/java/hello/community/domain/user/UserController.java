@@ -64,16 +64,6 @@ public class UserController {
         return ResponseEntity.ok(UserDto.Token.builder().token(jwt).build());
     }
 
-    // 위도 경도 등록
-    @Operation(
-            summary = "위도 경도 등록",
-            description = "우리집의 위도 경도를 등록합니다."
-    )
-    @PostMapping("/user/location")
-    public ResponseEntity<UserDto.CheckResult> setLocation(UserDto.Location location) {
-        userService.setLocation(location);
-        return ResponseEntity.ok(UserDto.CheckResult.builder().result("위도 경도 등록 완료").build());
-    }
 
     // 토큰으로 본인 정보 가져오기
     @Operation(

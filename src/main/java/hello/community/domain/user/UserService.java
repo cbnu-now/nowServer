@@ -51,14 +51,7 @@ public class UserService {
         return token;    // 생성자에 토큰 추가
     }
 
-    public void setLocation(UserDto.Location location) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        Long userId = Long.parseLong(username);
-        Users user = userRepository.findById(userId).get();
-        user.setLatitude(location.getLatitude());
-        user.setLongitude(location.getLongitude());
-    }
+
 
     public Users getUserInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
