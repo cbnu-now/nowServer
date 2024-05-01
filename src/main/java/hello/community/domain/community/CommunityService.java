@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -81,5 +82,35 @@ public class CommunityService {
             throw new IllegalArgumentException("댓글 작성자만 삭제할 수 있습니다.");
         }
         commentRepository.delete(comment);
+    }
+
+    public CommunityDto.viewGroupBuyInfo getCommunity(Long communityId) {
+        Community community = communityRepository.findById(communityId).orElseThrow(() -> new IllegalArgumentException("해당 커뮤니티글이 존재하지 않습니다."));
+        Users user = userRepository.findById(community.getUser().getId()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        community.setView(community.getView() + 1);
+        List<Comment> byIdCommunityId = commentRepository.findByCommunity_id(communityId);
+
+        // comment를 commentComponent로 변환
+        List<CommunityDto.CommentComponent> comments = byIdCommunityId.stream().map(comment -> CommunityDto.CommentComponent.builder()
+                .id(comment.getId())
+                .content(comment.getContent())
+                .writerName(comment.getUser().getName())
+                .writerImg(comment.getUser().getPhoto())
+                .createdAt(comment.getCreatedAt())
+                .build()).toList();
+
+        return CommunityDto.viewGroupBuyInfo.builder()
+                .writerName(user.getName())
+                .writerImg(user.getPhoto())
+                .address(community.getAddress())
+                .title(community.getTitle())
+                .img(community.getPhoto())
+                .content(community.getContent())
+                .Category(community.getCategory())
+                .createdAt(community.getCreatedAt())
+                .view(community.getView())
+                .likes(community.getLikes())
+                .comments(comments)
+                .build();
     }
 }

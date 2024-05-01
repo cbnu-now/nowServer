@@ -36,11 +36,19 @@ public class CommunityDto {
         private String content;
         private String Category;
         private LocalDateTime createdAt;
-        private Long headCount;
-        private Long currentCount;
 
         private Long view;
         private Long likes;
-        private List<Comment> comments;
+        private List<CommentComponent> comments;
+    }
+
+    @Builder
+    @Data
+    public static class CommentComponent{
+        private Long id;
+        private String content;
+        private String writerName;
+        private String writerImg;
+        private LocalDateTime createdAt;
     }
 }

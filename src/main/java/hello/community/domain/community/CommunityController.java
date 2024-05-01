@@ -74,7 +74,9 @@ public class CommunityController {
             summary = "커뮤니티 글 조회",
             description = "커뮤니티의 id를 이용해 모집글 정보를 조회합니다."
     )
-    public void getGroupBuy(@PathVariable Long communityId) {
+    public ResponseEntity<CommunityDto.viewGroupBuyInfo> getCommunity(@PathVariable Long communityId) {
+        CommunityDto.viewGroupBuyInfo communityInfo = communityService.getCommunity(communityId);
+        return ResponseEntity.ok(communityInfo);
     }
 
     @PostMapping("/comment/{communityId}")
