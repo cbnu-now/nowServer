@@ -37,7 +37,7 @@ public class GroupBuyController {
                     )
             )
     )
-    public ResponseEntity<UserDto.CheckResult> updateUserInfo(
+    public ResponseEntity<UserDto.CheckResult> createGroupBuy(
             @RequestParam(value = "img") MultipartFile multipartFile,
             GroupBuyDto.GroupBuyInfo groupBuyInfo
     ) throws IOException {
