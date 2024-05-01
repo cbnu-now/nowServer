@@ -82,7 +82,9 @@ public class CommunityController {
             summary = "댓글 작성",
             description = "커뮤니티의 id를 이용해 댓글을 작성합니다."
     )
-    public void createComment(@PathVariable Long communityId, String content) {
+    public ResponseEntity<UserDto.CheckResult> createComment(@PathVariable Long communityId, String content) {
+        communityService.createComment(communityId, content);
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("저장 완료").build());
 
     }
 
@@ -91,7 +93,8 @@ public class CommunityController {
             summary = "댓글 수정",
             description = "댓글의 id를 이용해 댓글을 수정합니다."
     )
-    public void updateComment(@PathVariable Long commentId, String content) {
+    public ResponseEntity<UserDto.CheckResult> updateComment(@PathVariable Long commentId, String content) {
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("저장 완료").build());
 
     }
 
@@ -100,7 +103,8 @@ public class CommunityController {
             summary = "댓글 삭제",
             description = "댓글의 id를 이용해 댓글을 작성합니다."
     )
-    public void deleteComment(@PathVariable Long commentId) {
+    public ResponseEntity<UserDto.CheckResult> deleteComment(@PathVariable Long commentId) {
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("저장 완료").build());
 
     }
 

@@ -43,4 +43,18 @@ public class CommunityService {
         community.setView(0L);
         communityRepository.save(community);
     }
+
+    public void createComment(Long communityId, String content) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+        Users user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        Community community = communityRepository.findById(communityId).orElseThrow(() -> new IllegalArgumentException("해당 커뮤니티글이 존재하지 않습니다."));
+        Comment comment = new Comment();
+        comment.setContent(content);
+        comment.setUser(user);
+        comment.setCommunity(community);
+        comment.setCreatedAt(LocalDateTime.now());
+        commentRepository.save(comment);
+    }
 }
