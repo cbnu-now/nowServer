@@ -47,6 +47,7 @@ public class GroupBuyDto {
     @Data
     @Schema(description = "리스트로 모집글 보여줄때 필요한 정보")
     public static class viewGroupBuyListInfo {
+        private Long id;
         private String title;
         private String img;
         private String Category;

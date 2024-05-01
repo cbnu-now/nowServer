@@ -107,6 +107,7 @@ public class GroupBuyService {
                         .currentCount(groupBuy.getCurrentCount())
                         .likes(groupBuy.getLikes())
                         .isLiked(isLiked)
+                        .id(groupBuy.getId())
                         .build();
                 nearbyGroupBuys.add(viewGroupBuyListInfo);
             }
