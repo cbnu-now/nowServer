@@ -18,27 +18,27 @@ public class GroupBuy {
 
     private String title;
     private String content;
+    private String category;
 
     @Lob
     @Column(columnDefinition = "TEXT")
     private String photo;
 
-    private int headCount;
-    private int currentCount;
+    private Long headCount;
+    private Long currentCount;
 
-    private String latitude;
-    private String longitude;
+    private Double latitude;
+    private Double longitude;
 
     // 생성일자
     private LocalDateTime createdAt;
 
-    private int view;
-    private int likes;
+    private Long view;
+    private Long likes;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Users user;
-
 
 
 }
