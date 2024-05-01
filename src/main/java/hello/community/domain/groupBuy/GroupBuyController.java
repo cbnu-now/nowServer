@@ -11,9 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -28,7 +26,7 @@ public class GroupBuyController {
     @PostMapping("/groupbuy")
     @Operation(
             summary = "모집글 등록",
-            description = "모집글을 등록합니다. 이때 사진은 멀티파트 폼데이터로 photo라고 해서 보내야합니다.",
+            description = "모집글을 등록합니다. 이때 사진은 멀티파트 폼데이터로 img라고 해서 보내야합니다.",
             requestBody = @RequestBody(
                     content = @Content(
                             mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
@@ -66,4 +64,15 @@ public class GroupBuyController {
         groupBuyService.createGroupBuy(groupBuyInfo, url);
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("저장 완료").build());
     }
+
+
+    @GetMapping("/groupbuy/{groupBuyId}")
+    @Operation(
+            summary = "모집글 조회",
+            description = "모집글의 id를 이용해 모집글 정보를 조회합니다."
+    )
+    public ResponseEntity<GroupBuyDto.viewGroupBuyInfo> getGroupBuy(@PathVariable Long groupBuyId) {
+        return ResponseEntity.ok(groupBuyService.getGroupBuy(groupBuyId));
+    }
+
 }
