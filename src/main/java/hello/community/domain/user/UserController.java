@@ -1,20 +1,26 @@
 package hello.community.domain.user;
 
+import hello.community.global.s3.S3Upload;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Tag(name = "User", description = "User 관련 API 입니다.")
 @RestController
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final S3Upload s3Upload;
 
     @Operation(
             summary = "회원 가입",
@@ -23,7 +29,7 @@ public class UserController {
     @PostMapping("/user")
     public ResponseEntity<UserDto.CheckResult> join(UserDto.JoinInfo joinDto) {
         Long userId = userService.join(joinDto);
-        return ResponseEntity.ok(UserDto.CheckResult.builder().result("회원가입 성공 "+ "회원아이디: " + userId).build());
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("회원가입 성공 " + "회원아이디: " + userId).build());
     }
 
 
@@ -39,7 +45,6 @@ public class UserController {
         }
         return ResponseEntity.ok(UserDto.CheckResult.builder().result(userId.toString()).build());
     }
-
 
 
     @DeleteMapping("/user")
@@ -85,6 +90,35 @@ public class UserController {
         return ResponseEntity.ok(isExistUser);
     }
 
+
+    @PostMapping("/user/update")
+    @Operation(
+            summary = "유저 정보 수정",
+            description = "유저 정보를 수정합니다. 여기서 프로필 사진도 바꿀 수 있으며 원하는 정보만 보내면 됩니다. \n" +
+                    "프로필 사진을 등록시킬때는 헤더에 토큰과 함께, 멀티파트 폼데이터로 img 라는 이름으로 보내야합니다.\n" +
+                    "이름은 name이라는 이름으로 보내면 됩니다.",
+            requestBody = @RequestBody(
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            schema = @Schema(
+                                    type = "string",
+                                    format = "binary"
+                            )
+                    )
+            )
+    )
+    public ResponseEntity<UserDto.CheckResult> updateUserInfo(
+            @RequestParam(value = "img", required = false) MultipartFile multipartFile,
+            @RequestParam(value = "name", required = false) String name
+    ) throws IOException {
+        String url = null;
+        if (multipartFile != null && !multipartFile.isEmpty()) {
+            long fileSize = multipartFile.getSize();
+            url = s3Upload.upload(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), fileSize);
+        }
+        userService.updateUserInfo(url,name);
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("저장 완료").build());
+    }
 
 
 }

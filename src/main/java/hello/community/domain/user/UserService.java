@@ -4,6 +4,7 @@ import hello.community.global.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,5 +65,16 @@ public class UserService {
     public boolean nameDobuleCheck(String name) {
         Users findedName = userRepository.findByName(name);
         return findedName != null;
+    }
+
+    public void updateUserInfo(String url,String name) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+        Users user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if(url!=null)
+            user.setPhoto(url);
+        if(name!=null)
+            user.setName(name);
     }
 }
