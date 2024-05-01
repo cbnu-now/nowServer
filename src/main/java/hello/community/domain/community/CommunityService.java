@@ -57,4 +57,29 @@ public class CommunityService {
         comment.setCreatedAt(LocalDateTime.now());
         commentRepository.save(comment);
     }
+
+    public void updateComment(Long commentId, String content) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
+        // 댓글 작성자와 현재 로그인한 유저가 같은지 확인
+        if (comment.getUser().getId() != userId) {
+            throw new IllegalArgumentException("댓글 작성자만 수정할 수 있습니다.");
+        }
+
+        comment.setContent(content);
+    }
+
+    public void deleteComment(Long commentId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
+        // 댓글 작성자와 현재 로그인한 유저가 같은지 확인
+        if (comment.getUser().getId() != userId) {
+            throw new IllegalArgumentException("댓글 작성자만 삭제할 수 있습니다.");
+        }
+        commentRepository.delete(comment);
+    }
 }

@@ -94,18 +94,18 @@ public class CommunityController {
             description = "댓글의 id를 이용해 댓글을 수정합니다."
     )
     public ResponseEntity<UserDto.CheckResult> updateComment(@PathVariable Long commentId, String content) {
-        return ResponseEntity.ok(UserDto.CheckResult.builder().result("저장 완료").build());
-
+        communityService.updateComment(commentId, content);
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("수정 완료").build());
     }
 
     @DeleteMapping("/comment/{commentId}")
     @Operation(
             summary = "댓글 삭제",
-            description = "댓글의 id를 이용해 댓글을 작성합니다."
+            description = "댓글의 id를 이용해 댓글을 삭제합니다."
     )
     public ResponseEntity<UserDto.CheckResult> deleteComment(@PathVariable Long commentId) {
-        return ResponseEntity.ok(UserDto.CheckResult.builder().result("저장 완료").build());
-
+        communityService.deleteComment(commentId);
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("삭제 완료").build());
     }
 
 
