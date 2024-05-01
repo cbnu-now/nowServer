@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Tag(name = "GroupBuy", description = "모집글 관련 API 입니다.")
 @RestController
@@ -74,5 +75,18 @@ public class GroupBuyController {
     public ResponseEntity<GroupBuyDto.viewGroupBuyInfo> getGroupBuy(@PathVariable Long groupBuyId) {
         return ResponseEntity.ok(groupBuyService.getGroupBuy(groupBuyId));
     }
+
+
+
+    @GetMapping("/groupbuy/list")
+    @Operation(
+            summary = "현재 위치의 모집글 리스트 조회",
+            description = "모집글의 id를 이용해 모집글 정보를 조회합니다."
+    )
+    public ResponseEntity<List<GroupBuyDto.viewGroupBuyListInfo>> getGroupBuyListByLocation(Double Latitude, Double Longitude) {
+        List<GroupBuyDto.viewGroupBuyListInfo> groupBuyList = groupBuyService.getGroupBuyListByLocation(Latitude, Longitude);
+        return ResponseEntity.ok(groupBuyList);
+    }
+
 
 }

@@ -42,4 +42,18 @@ public class GroupBuyDto {
         private Long view;
         private Long likes;
     }
+
+    @Builder
+    @Data
+    @Schema(description = "리스트로 모집글 보여줄때 필요한 정보")
+    public static class viewGroupBuyListInfo {
+        private String title;
+        private String img;
+        private String Category;
+        private LocalDateTime createdAt;
+        private Long headCount;
+        private Long currentCount;
+        private Long likes;
+        private boolean isLiked;
+    }
 }
