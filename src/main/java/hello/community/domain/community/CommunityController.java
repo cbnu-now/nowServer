@@ -1,5 +1,6 @@
 package hello.community.domain.community;
 
+import hello.community.domain.groupBuy.GroupBuyDto;
 import hello.community.domain.user.UserDto;
 import hello.community.global.s3.S3Upload;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,9 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -38,7 +37,7 @@ public class CommunityController {
                     )
             )
     )
-    public ResponseEntity<UserDto.CheckResult> updateUserInfo(
+    public ResponseEntity<UserDto.CheckResult> createCommunity(
             @RequestParam(value = "img") MultipartFile multipartFile,
             CommunityDto.CommunityInfo communityInfo
     ) throws IOException {
@@ -67,4 +66,44 @@ public class CommunityController {
         communityService.createCommunity(communityInfo, url);
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("저장 완료").build());
     }
+
+
+
+    @GetMapping("/community/{communityId}")
+    @Operation(
+            summary = "커뮤니티 글 조회",
+            description = "커뮤니티의 id를 이용해 모집글 정보를 조회합니다."
+    )
+    public void getGroupBuy(@PathVariable Long communityId) {
+    }
+
+    @PostMapping("/comment/{communityId}")
+    @Operation(
+            summary = "댓글 작성",
+            description = "커뮤니티의 id를 이용해 댓글을 작성합니다."
+    )
+    public void createComment(@PathVariable Long communityId, String content) {
+
+    }
+
+    @PutMapping("/comment/{commentId}")
+    @Operation(
+            summary = "댓글 수정",
+            description = "댓글의 id를 이용해 댓글을 수정합니다."
+    )
+    public void updateComment(@PathVariable Long commentId, String content) {
+
+    }
+
+    @DeleteMapping("/comment/{commentId}")
+    @Operation(
+            summary = "댓글 삭제",
+            description = "댓글의 id를 이용해 댓글을 작성합니다."
+    )
+    public void deleteComment(@PathVariable Long commentId) {
+
+    }
+
+
+
 }
