@@ -26,8 +26,13 @@ public class Community {
     @Column(columnDefinition = "TEXT")
     private String photo;
 
-    private int view;
-    private int likes;
+    private String category;
+    private Double latitude;
+    private Double longitude;
+    private String address;
+
+    private Long view;
+    private Long likes;
 
     private LocalDateTime createdAt;
 
