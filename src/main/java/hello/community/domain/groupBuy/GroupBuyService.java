@@ -131,4 +131,25 @@ public class GroupBuyService {
 
         return distance;
     }
+
+    public void likeGroupBuy(Long groupBuyId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+
+        GroupBuy groupBuy = groupBuyRepository.findById(groupBuyId).orElseThrow(() -> new IllegalArgumentException("해당 모집글이 존재하지 않습니다."));
+        Users user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        Liked liked = likedRepository.findByUserIdAndGroupBuyId(userId, groupBuyId);
+        if (liked == null) {
+            groupBuy.setLikes(groupBuy.getLikes() + 1);
+            Liked liking = new Liked();
+            liking.setGroupBuyId(groupBuy.getId());
+            liking.setUserId(userId);
+            likedRepository.save(liking);
+        } else {
+            groupBuy.setLikes(groupBuy.getLikes() - 1);
+            likedRepository.delete(liked);
+        }
+    }
 }

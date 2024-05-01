@@ -1,7 +1,6 @@
 package hello.community.domain.groupBuy;
 
 import hello.community.domain.user.UserDto;
-import hello.community.domain.user.UserService;
 import hello.community.global.s3.S3Upload;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -86,6 +85,16 @@ public class GroupBuyController {
     public ResponseEntity<List<GroupBuyDto.viewGroupBuyListInfo>> getGroupBuyListByLocation(Double Latitude, Double Longitude) {
         List<GroupBuyDto.viewGroupBuyListInfo> groupBuyList = groupBuyService.getGroupBuyListByLocation(Latitude, Longitude);
         return ResponseEntity.ok(groupBuyList);
+    }
+
+    @PostMapping("/groupbuy/like")
+    @Operation(
+            summary = "모집글 좋아요",
+            description = "모집글의 좋아요 상태를 변경합니다. 좋아요를 누르면 좋아요가 증가하고, 다시 누르면 좋아요가 감소합니다."
+    )
+    public ResponseEntity<UserDto.CheckResult> likeGroupBuy(Long groupBuyId) {
+        groupBuyService.likeGroupBuy(groupBuyId);
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("좋아요 상태 변경 완료").build());
     }
 
 
