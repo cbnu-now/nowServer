@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Tag(name = "Community", description = "커뮤니티 관련 API 입니다.")
 @RestController
@@ -122,6 +123,14 @@ public class CommunityController {
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("삭제 완료").build());
     }
 
-
+    @GetMapping("/community/list")
+    @Operation(
+            summary = "현재 위치의 커뮤니티 글 리스트 조회",
+            description = "모집글의 id를 이용해 커뮤니티글 정보를 조회합니다."
+    )
+    public ResponseEntity<List<CommunityDto.viewCommunityListInfo>> getCommunityListByLocation(Double Latitude, Double Longitude) {
+        List<CommunityDto.viewCommunityListInfo> commmunityList = communityService.getCommunityByLocation(Latitude, Longitude);
+        return ResponseEntity.ok(commmunityList);
+    }
 
 }

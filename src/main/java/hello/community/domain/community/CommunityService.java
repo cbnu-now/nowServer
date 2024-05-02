@@ -1,6 +1,6 @@
 package hello.community.domain.community;
 
-import hello.community.domain.groupBuy.GroupBuy;
+import hello.community.domain.groupBuy.GroupBuyDto;
 import hello.community.domain.liked.Liked;
 import hello.community.domain.liked.LikedRepository;
 import hello.community.domain.user.UserRepository;
@@ -13,7 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -135,5 +138,58 @@ public class CommunityService {
             community.setLikes(community.getLikes() - 1);
             likedRepository.delete(liked);
         }
+    }
+
+
+
+    public List<CommunityDto.viewCommunityListInfo> getCommunityByLocation(Double latitude, Double longitude) {
+        List<Community> allCommunity = communityRepository.findAll();// 데이터베이스에서 모든 게시물 가져오기
+        List<CommunityDto.viewCommunityListInfo> nearbyCommunity = new ArrayList<>();
+
+        // 유저 찾기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+
+        if(userId == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        for (Community community : allCommunity) {
+            double distance = calculateDistanceInMeter(latitude, longitude, community.getLatitude(), community.getLongitude());
+
+            if (distance <= 1500) { // 1.5km 이내
+
+                CommunityDto.viewCommunityListInfo viewGroupBuyListInfo = CommunityDto.viewCommunityListInfo.builder()
+                        .title(community.getTitle())
+                        .img(community.getPhoto())
+                        .category(community.getCategory())
+                        .createdAt(community.getCreatedAt())
+                        .likes(community.getLikes())
+                        .id(community.getId())
+                        .content(community.getContent())
+                        .address(community.getAddress())
+                        .build();
+                nearbyCommunity.add(viewGroupBuyListInfo);
+            }
+        }
+
+        return nearbyCommunity;
+    }
+
+    // 위도, 경도로 거리 계산
+    public double calculateDistanceInMeter(double lat1, double lon1, double lat2, double lon2) {
+        // 지구 반지름 (미터 단위)
+        final int R = 6371 * 1000;
+
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c;
+
+        return distance;
     }
 }

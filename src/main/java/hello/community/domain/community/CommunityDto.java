@@ -51,4 +51,18 @@ public class CommunityDto {
         private String writerImg;
         private LocalDateTime createdAt;
     }
+
+    @Builder
+    @Data
+    @Schema(description = "리스트로 커뮤니티글 보여줄때 필요한 정보")
+    public static class viewCommunityListInfo {
+        private Long id;
+        private String title;
+        private String img;
+        private String category;
+        private LocalDateTime createdAt;
+        private String address;
+        private String content;
+        private Long likes;
+    }
 }
