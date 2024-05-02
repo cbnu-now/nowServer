@@ -1,5 +1,11 @@
 package hello.community.domain.user;
 
+import hello.community.domain.community.CommunityRepository;
+import hello.community.domain.groupBuy.GroupBuy;
+import hello.community.domain.groupBuy.GroupBuyDto;
+import hello.community.domain.groupBuy.GroupBuyRepository;
+import hello.community.domain.liked.Liked;
+import hello.community.domain.liked.LikedRepository;
 import hello.community.global.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -8,12 +14,20 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final GroupBuyRepository groupBuyRepository;
+    private final CommunityRepository communityRepository;
+    private final LikedRepository likedRepository;
 
     //회원가입
     public Long join(UserDto.JoinInfo joinDto) {
@@ -76,5 +90,35 @@ public class UserService {
             user.setPhoto(url);
         if(name!=null)
             user.setName(name);
+    }
+
+    public List<GroupBuyDto.viewGroupBuyListInfo> getMyGroupBuyList() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+        List<GroupBuy> byUserId = groupBuyRepository.findByUserId(userId);
+        List<GroupBuyDto.viewGroupBuyListInfo> GroupBuyList = new ArrayList<>();
+
+        List<Liked> likedList = likedRepository.findByUserId(userId);
+        Set<Long> likedGroupBuyIds = likedList.stream().map(Liked::getGroupBuyId).collect(Collectors.toSet());
+
+        for (GroupBuy groupBuy : byUserId) {
+            boolean isLiked = likedGroupBuyIds.contains(groupBuy.getId());
+
+            GroupBuyDto.viewGroupBuyListInfo viewGroupBuyListInfo = GroupBuyDto.viewGroupBuyListInfo.builder()
+                        .title(groupBuy.getTitle())
+                        .img(groupBuy.getPhoto())
+                        .Category(groupBuy.getCategory())
+                        .createdAt(groupBuy.getCreatedAt())
+                        .headCount(groupBuy.getHeadCount())
+                        .currentCount(groupBuy.getCurrentCount())
+                        .likes(groupBuy.getLikes())
+                        .id(groupBuy.getId())
+                        .isLiked(isLiked)
+                        .build();
+                GroupBuyList.add(viewGroupBuyListInfo);
+        }
+
+        return GroupBuyList;
     }
 }
