@@ -149,4 +149,35 @@ public class UserService {
 
         return GroupBuyList;
     }
+
+    public List<GroupBuyDto.viewGroupBuyListInfo> getMyGroupBuyLikeList() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+        List<Liked> likedList = likedRepository.findByUserId(userId);
+        List<GroupBuyDto.viewGroupBuyListInfo> GroupBuyList = new ArrayList<>();
+
+
+        for (Liked liked : likedList) {
+            if(liked.getGroupBuyId() == null)
+                continue;
+            GroupBuy groupBuy = groupBuyRepository.findById(liked.getGroupBuyId()).orElseThrow(() -> new IllegalArgumentException("해당 모집글이 존재하지 않습니다."));
+            boolean isLiked = true;
+
+            GroupBuyDto.viewGroupBuyListInfo viewGroupBuyListInfo = GroupBuyDto.viewGroupBuyListInfo.builder()
+                    .title(groupBuy.getTitle())
+                    .img(groupBuy.getPhoto())
+                    .Category(groupBuy.getCategory())
+                    .createdAt(groupBuy.getCreatedAt())
+                    .headCount(groupBuy.getHeadCount())
+                    .currentCount(groupBuy.getCurrentCount())
+                    .likes(groupBuy.getLikes())
+                    .id(groupBuy.getId())
+                    .isLiked(isLiked)
+                    .build();
+            GroupBuyList.add(viewGroupBuyListInfo);
+        }
+        return GroupBuyList;
+
+    }
 }

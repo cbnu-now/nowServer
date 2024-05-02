@@ -134,16 +134,38 @@ public class UserController {
     }
 
 
-
     @Operation(
             summary = "내가 쓴 커뮤니티 글 조회",
             description = "내가 쓴 커뮤니티 글을 조회합니다. 토큰만 있다면 이를 조회할 수 있습니다."
     )
     @GetMapping("/user/community")
-    public ResponseEntity<List<CommunityDto.viewCommunityListInfo>> GetMyCommunityList() {
+    public ResponseEntity<List<CommunityDto.viewCommunityListInfo>> GetMyCommunityLike() {
         List<CommunityDto.viewCommunityListInfo> commmunityList = userService.getMyCommunity();
         return ResponseEntity.ok(commmunityList);
     }
+
+
+    @Operation(
+            summary = "관심을 한 모집글 조회",
+            description = "내가 쓴 모집글을 조회합니다. 토큰만 있다면 이를 조회할 수 있습니다."
+    )
+    @GetMapping("/user/groupbuy/like")
+    public ResponseEntity<List<GroupBuyDto.viewGroupBuyListInfo>> GetMyGroupBuyLike() {
+        List<GroupBuyDto.viewGroupBuyListInfo> groupBuyList = userService.getMyGroupBuyLikeList();
+        return ResponseEntity.ok(groupBuyList);
+    }
+//
+//    @Operation(
+//            summary = "관심을 한 커뮤니티 글 조회",
+//            description = "내가 관심을  커뮤니티 글을 조회합니다. 토큰만 있다면 이를 조회할 수 있습니다."
+//    )
+//    @GetMapping("/user/community/like")
+//    public ResponseEntity<List<CommunityDto.viewCommunityListInfo>> GetMyCommunityList() {
+//        List<CommunityDto.viewCommunityListInfo> commmunityList = userService.getMyCommunityLike();
+//        return ResponseEntity.ok(commmunityList);
+//    }
+
+
 
 
 }
