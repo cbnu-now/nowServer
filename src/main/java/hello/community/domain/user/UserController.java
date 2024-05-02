@@ -1,5 +1,6 @@
 package hello.community.domain.user;
 
+import hello.community.domain.community.CommunityDto;
 import hello.community.domain.groupBuy.GroupBuyDto;
 import hello.community.global.s3.S3Upload;
 import io.swagger.v3.oas.annotations.Operation;
@@ -131,5 +132,18 @@ public class UserController {
         List<GroupBuyDto.viewGroupBuyListInfo> groupBuyList = userService.getMyGroupBuyList();
         return ResponseEntity.ok(groupBuyList);
     }
+
+
+
+    @Operation(
+            summary = "내가 쓴 커뮤니티 글 조회",
+            description = "내가 쓴 커뮤니티 글을 조회합니다. 토큰만 있다면 이를 조회할 수 있습니다."
+    )
+    @GetMapping("/user/community")
+    public ResponseEntity<List<CommunityDto.viewCommunityListInfo>> GetMyCommunityList() {
+        List<CommunityDto.viewCommunityListInfo> commmunityList = userService.getMyCommunity();
+        return ResponseEntity.ok(commmunityList);
+    }
+
 
 }

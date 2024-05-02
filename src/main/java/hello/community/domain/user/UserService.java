@@ -1,5 +1,7 @@
 package hello.community.domain.user;
 
+import hello.community.domain.community.Community;
+import hello.community.domain.community.CommunityDto;
 import hello.community.domain.community.CommunityRepository;
 import hello.community.domain.groupBuy.GroupBuy;
 import hello.community.domain.groupBuy.GroupBuyDto;
@@ -117,6 +119,32 @@ public class UserService {
                         .isLiked(isLiked)
                         .build();
                 GroupBuyList.add(viewGroupBuyListInfo);
+        }
+
+        return GroupBuyList;
+    }
+
+    public List<CommunityDto.viewCommunityListInfo> getMyCommunity() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+        List<Community> byUserId = communityRepository.findByUserId(userId);
+        List<CommunityDto.viewCommunityListInfo> GroupBuyList = new ArrayList<>();
+
+        for (Community community : byUserId) {
+
+            CommunityDto.viewCommunityListInfo viewGroupBuyListInfo = CommunityDto.viewCommunityListInfo.builder()
+                    .title(community.getTitle())
+                    .img(community.getPhoto())
+                    .category(community.getCategory())
+                    .createdAt(community.getCreatedAt())
+                    .likes(community.getLikes())
+                    .id(community.getId())
+                    .content(community.getContent())
+                    .address(community.getAddress())
+                    .build();
+
+            GroupBuyList.add(viewGroupBuyListInfo);
         }
 
         return GroupBuyList;
