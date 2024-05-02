@@ -180,4 +180,31 @@ public class UserService {
         return GroupBuyList;
 
     }
+
+    public List<CommunityDto.viewCommunityListInfo> getMyCommunityLike() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+        List<Liked> likedList = likedRepository.findByUserId(userId);
+        List<CommunityDto.viewCommunityListInfo> communityList = new ArrayList<>();
+
+        for (Liked liked : likedList) {
+            if(liked.getCommunityId() == null)
+                continue;
+            Community community = communityRepository.findById(liked.getCommunityId()).orElseThrow(() -> new IllegalArgumentException("해당 커뮤니티 글이 존재하지 않습니다."));
+            CommunityDto.viewCommunityListInfo viewCommunityListInfo = CommunityDto.viewCommunityListInfo.builder()
+                    .title(community.getTitle())
+                    .img(community.getPhoto())
+                    .category(community.getCategory())
+                    .createdAt(community.getCreatedAt())
+                    .likes(community.getLikes())
+                    .id(community.getId())
+                    .content(community.getContent())
+                    .address(community.getAddress())
+                    .build();
+            communityList.add(viewCommunityListInfo);
+        }
+        return communityList;
+
+    }
 }
