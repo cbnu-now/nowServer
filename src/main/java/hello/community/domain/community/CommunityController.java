@@ -69,6 +69,18 @@ public class CommunityController {
 
 
 
+    @PostMapping("/community/like")
+    @Operation(
+            summary = "커뮤니티 좋아요",
+            description = "커뮤니티 글의 좋아요 상태를 변경합니다. 좋아요를 누르면 좋아요가 증가하고, 다시 누르면 좋아요가 감소합니다."
+    )
+    public ResponseEntity<UserDto.CheckResult> likeCommunity(Long communityId) {
+        communityService.likeCommunity(communityId);
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("좋아요 상태 변경 완료").build());
+    }
+
+
+
     @GetMapping("/community/{communityId}")
     @Operation(
             summary = "커뮤니티 글 조회",

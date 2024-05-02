@@ -1,5 +1,7 @@
 package hello.community.domain.community;
 
+import hello.community.domain.groupBuy.GroupBuy;
+import hello.community.domain.liked.Liked;
 import hello.community.domain.liked.LikedRepository;
 import hello.community.domain.user.UserRepository;
 import hello.community.domain.user.Users;
@@ -112,5 +114,26 @@ public class CommunityService {
                 .likes(community.getLikes())
                 .comments(comments)
                 .build();
+    }
+
+    public void likeCommunity(Long communityId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+
+        Community community = communityRepository.findById(communityId).orElseThrow(() -> new IllegalArgumentException("해당 모집글이 존재하지 않습니다."));
+        Users user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        Liked liked = likedRepository.findByUserIdAndCommunityId(userId, communityId);
+        if (liked == null) {
+            community.setLikes(community.getLikes() + 1);
+            Liked liking = new Liked();
+            liking.setCommunityId(community.getId());
+            liking.setUserId(userId);
+            likedRepository.save(liking);
+        } else {
+            community.setLikes(community.getLikes() - 1);
+            likedRepository.delete(liked);
+        }
     }
 }

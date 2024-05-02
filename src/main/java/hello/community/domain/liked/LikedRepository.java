@@ -7,4 +7,5 @@ import java.util.List;
 public interface LikedRepository extends JpaRepository<Liked, Long>{
     List<Liked> findByUserId(Long userId);
     Liked findByUserIdAndGroupBuyId(Long userId, Long groupBuyId);
+    Liked findByUserIdAndCommunityId(Long userId, Long communityId);
 }
