@@ -97,5 +97,34 @@ public class GroupBuyController {
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("좋아요 상태 변경 완료").build());
     }
 
+    @PutMapping("/groupbuy/{groupBuyId}")
+    @Operation(
+            summary = "모집글 수정",
+            description = "모집글을 수정합니다. 이때 사진은 멀티파트 폼데이터로 img라고 해서 보내야합니다.",
+            requestBody = @RequestBody(
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            schema = @Schema(
+                                    type = "string",
+                                    format = "binary"
+                            )
+                    )
+            )
+    )
+    public ResponseEntity<UserDto.CheckResult> updateGroupBuy(
+            @RequestParam(value = "img", required = false) MultipartFile multipartFile,
+            GroupBuyDto.GroupBuyInfo groupBuyInfo,
+            @PathVariable Long groupBuyId
+    ) throws IOException {
+        String url = null;
+
+        if (!multipartFile.isEmpty()) {
+            long fileSize = multipartFile.getSize();
+            url = s3Upload.upload(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), fileSize);
+        }
+        groupBuyService.updateGroupBuy(groupBuyInfo, url, groupBuyId);
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("수정 완료").build());
+    }
+
 
 }

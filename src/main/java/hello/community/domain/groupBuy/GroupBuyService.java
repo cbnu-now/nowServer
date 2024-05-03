@@ -155,4 +155,42 @@ public class GroupBuyService {
             likedRepository.delete(liked);
         }
     }
+
+    public void updateGroupBuy(GroupBuyDto.GroupBuyInfo groupBuyInfo, String url, Long groupBuyId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+        Users user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        GroupBuy groupBuy = groupBuyRepository.findById(groupBuyId).orElseThrow(() -> new IllegalArgumentException("해당 모집글이 존재하지 않습니다."));
+        // null 이 아닌것들만 업데이트
+        if (groupBuyInfo.getTitle() != null) {
+            groupBuy.setTitle(groupBuyInfo.getTitle());
+        }
+        if (groupBuyInfo.getContent() != null) {
+            groupBuy.setContent(groupBuyInfo.getContent());
+        }
+        if (groupBuyInfo.getCategory() != null) {
+            groupBuy.setCategory(groupBuyInfo.getCategory());
+        }
+        if (groupBuyInfo.getLatitude() != null) {
+            groupBuy.setLatitude(groupBuyInfo.getLatitude());
+        }
+        if (groupBuyInfo.getLongitude() != null) {
+            groupBuy.setLongitude(groupBuyInfo.getLongitude());
+        }
+        if (groupBuyInfo.getAddress() != null) {
+            groupBuy.setAddress(groupBuyInfo.getAddress());
+        }
+        if (groupBuyInfo.getSpotName() != null) {
+            groupBuy.setSpotName(groupBuyInfo.getSpotName());
+        }
+        if (groupBuyInfo.getHeadCount() != null) {
+            groupBuy.setHeadCount(groupBuyInfo.getHeadCount());
+        }
+        if (url != null) {
+            groupBuy.setPhoto(url);
+
+        }
+    }
 }
