@@ -163,6 +163,12 @@ public class GroupBuyService {
         Users user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         GroupBuy groupBuy = groupBuyRepository.findById(groupBuyId).orElseThrow(() -> new IllegalArgumentException("해당 모집글이 존재하지 않습니다."));
+
+        // 작성자와 수정하려는 사람이 같은지 확인
+        if (groupBuy.getUser().getId() != user.getId()) {
+            throw new IllegalArgumentException("작성자만 수정할 수 있습니다.");
+        }
+
         // null 이 아닌것들만 업데이트
         if (groupBuyInfo.getTitle() != null) {
             groupBuy.setTitle(groupBuyInfo.getTitle());

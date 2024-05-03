@@ -118,7 +118,7 @@ public class GroupBuyController {
     ) throws IOException {
         String url = null;
 
-        if (!multipartFile.isEmpty()) {
+        if (multipartFile != null)    {
             long fileSize = multipartFile.getSize();
             url = s3Upload.upload(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), fileSize);
         }
