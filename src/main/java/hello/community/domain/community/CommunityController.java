@@ -133,4 +133,33 @@ public class CommunityController {
         return ResponseEntity.ok(commmunityList);
     }
 
+    @PutMapping("/community/{communityId}")
+    @Operation(
+            summary = "커뮤니티 글 수정",
+            description = "커뮤니티 글을 수정합니다. 이때 사진은 멀티파트 폼데이터로 img라고 해서 보내야합니다.",
+            requestBody = @RequestBody(
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            schema = @Schema(
+                                    type = "string",
+                                    format = "binary"
+                            )
+                    )
+            )
+    )
+    public ResponseEntity<UserDto.CheckResult> updateCommunity(
+            @RequestParam(value = "img", required = false) MultipartFile multipartFile,
+            CommunityDto.CommunityInfo communityInfo,
+            @PathVariable Long communityId
+    ) throws IOException {
+        String url = null;
+
+        if (multipartFile != null)    {
+            long fileSize = multipartFile.getSize();
+            url = s3Upload.upload(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), fileSize);
+        }
+        communityService.updateCommunity(communityInfo, url, communityId);
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("수정 완료").build());
+    }
+
 }

@@ -141,7 +141,6 @@ public class CommunityService {
     }
 
 
-
     public List<CommunityDto.viewCommunityListInfo> getCommunityByLocation(Double latitude, Double longitude) {
         List<Community> allCommunity = communityRepository.findAll();// 데이터베이스에서 모든 게시물 가져오기
         List<CommunityDto.viewCommunityListInfo> nearbyCommunity = new ArrayList<>();
@@ -151,7 +150,7 @@ public class CommunityService {
         String username = authentication.getName();
         Long userId = Long.parseLong(username);
 
-        if(userId == null) {
+        if (userId == null) {
             throw new IllegalArgumentException("User not found");
         }
 
@@ -191,5 +190,41 @@ public class CommunityService {
         double distance = R * c;
 
         return distance;
+    }
+
+    public void updateCommunity(CommunityDto.CommunityInfo communityInfo, String url, Long communityId) {
+        Community community = communityRepository.findById(communityId).orElseThrow(() -> new IllegalArgumentException("해당 커뮤니티글이 존재하지 않습니다."));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+        if (community.getUser().getId() != userId) {
+            throw new IllegalArgumentException("글 작성자만 수정할 수 있습니다.");
+        }
+
+        // null 이 아닌값들 업데이트
+        if (communityInfo.getTitle() != null) {
+            community.setTitle(communityInfo.getTitle());
+        }
+        if (communityInfo.getContent() != null) {
+            community.setContent(communityInfo.getContent());
+        }
+        if (communityInfo.getCategory() != null) {
+            community.setCategory(communityInfo.getCategory());
+        }
+        if (communityInfo.getLatitude() != null) {
+            community.setLatitude(communityInfo.getLatitude());
+        }
+        if (communityInfo.getLongitude() != null) {
+            community.setLongitude(communityInfo.getLongitude());
+        }
+        if (communityInfo.getAddress() != null) {
+            community.setAddress(communityInfo.getAddress());
+        }
+        if (url != null) {
+            community.setPhoto(url);
+        }
+
+
+
     }
 }
