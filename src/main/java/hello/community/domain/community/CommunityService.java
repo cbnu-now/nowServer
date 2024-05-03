@@ -227,4 +227,15 @@ public class CommunityService {
 
 
     }
+
+    public void deleteGroupBuy(Long communityId) {
+        Community community = communityRepository.findById(communityId).orElseThrow(() -> new IllegalArgumentException("해당 커뮤니티글이 존재하지 않습니다."));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+        if (community.getUser().getId() != userId) {
+            throw new IllegalArgumentException("글 작성자만 삭제할 수 있습니다.");
+        }
+        communityRepository.delete(community);
+    }
 }
