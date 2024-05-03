@@ -30,6 +30,8 @@ public class GroupBuy {
     private Double latitude;
     private Double longitude;
     private String address;
+    private String spotName;
+
 
     // 생성일자
     private LocalDateTime createdAt;

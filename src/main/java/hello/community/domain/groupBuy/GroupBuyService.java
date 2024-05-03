@@ -40,6 +40,7 @@ public class GroupBuyService {
         groupBuy.setLatitude(groupBuyInfo.getLatitude());
         groupBuy.setHeadCount(groupBuyInfo.getHeadCount());
         groupBuy.setAddress(groupBuyInfo.getAddress());
+        groupBuy.setSpotName(groupBuyInfo.getSpotName());
 
         groupBuy.setUser(user);
         groupBuy.setCreatedAt(LocalDateTime.now());
@@ -57,6 +58,7 @@ public class GroupBuyService {
         groupBuy.setView(groupBuy.getView() + 1);
 
         GroupBuyDto.viewGroupBuyInfo viewGroupBuyInfo = GroupBuyDto.viewGroupBuyInfo.builder()
+                .spotName(groupBuy.getSpotName())
                 .writerName(user.getName())
                 .writerImg(user.getPhoto())
                 .address(groupBuy.getAddress())

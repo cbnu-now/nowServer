@@ -20,6 +20,7 @@ public class GroupBuyDto {
         private String Category;
         private Long headCount;
         private String address;
+        private String spotName;
     }
 
 
@@ -30,6 +31,7 @@ public class GroupBuyDto {
         private String writerName;
         private String writerImg;
         private String address;
+        private String spotName;
 
         private String title;
         private String img;
