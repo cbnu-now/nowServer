@@ -199,4 +199,20 @@ public class GroupBuyService {
 
         }
     }
+
+    public void deleteGroupBuy(Long groupBuyId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+        Users user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        GroupBuy groupBuy = groupBuyRepository.findById(groupBuyId).orElseThrow(() -> new IllegalArgumentException("해당 모집글이 존재하지 않습니다."));
+
+        // 작성자와 수정하려는 사람이 같은지 확인
+        if (groupBuy.getUser().getId() != user.getId()) {
+            throw new IllegalArgumentException("작성자만 삭제할 수 있습니다.");
+        }
+
+        groupBuyRepository.delete(groupBuy);
+    }
 }

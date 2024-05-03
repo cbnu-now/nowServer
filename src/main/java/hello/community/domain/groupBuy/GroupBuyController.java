@@ -127,4 +127,14 @@ public class GroupBuyController {
     }
 
 
+    @DeleteMapping("/groupbuy/{groupBuyId}")
+    @Operation(
+            summary = "모집글 삭제",
+            description = "모집글을 삭제합니다. 본인이 작성자면 삭제합니다."
+    )
+    public ResponseEntity<UserDto.CheckResult> deleteGroupBuy(@PathVariable Long groupBuyId) {
+        groupBuyService.deleteGroupBuy(groupBuyId);
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("삭제 완료").build());
+    }
+
 }
