@@ -36,6 +36,7 @@ public class CommunityDto {
         private String content;
         private String Category;
         private LocalDateTime createdAt;
+        private boolean isWriter;
 
         private Long view;
         private Long likes;

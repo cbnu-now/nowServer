@@ -105,6 +105,7 @@ public class CommunityService {
                 .build()).toList();
 
         return CommunityDto.viewGroupBuyInfo.builder()
+                .isWriter(community.getUser().getId().equals(Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName())))
                 .writerName(user.getName())
                 .writerImg(user.getPhoto())
                 .address(community.getAddress())
