@@ -39,13 +39,9 @@ public class CommunityController {
             )
     )
     public ResponseEntity<UserDto.CheckResult> createCommunity(
-            @RequestParam(value = "img") MultipartFile multipartFile,
+            @RequestParam(value = "img", required = false) MultipartFile multipartFile,
             CommunityDto.CommunityInfo communityInfo
     ) throws IOException {
-        // 만약 사진 파일이 없다면 에러 메시지를 반환한다.
-        if (multipartFile == null || multipartFile.isEmpty()) {
-            return ResponseEntity.badRequest().body(UserDto.CheckResult.builder().result("이미지 파일이 없습니다.").build());
-        }
 
         // 만약 groupBuyInfo Dto에 null인 값이 있다면 에러 메시지를 반환한다.
         if (communityInfo == null ||
@@ -59,7 +55,8 @@ public class CommunityController {
         }
 
         String url = null;
-        if (!multipartFile.isEmpty()) {
+
+        if (multipartFile != null)    {
             long fileSize = multipartFile.getSize();
             url = s3Upload.upload(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), fileSize);
         }
