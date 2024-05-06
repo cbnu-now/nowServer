@@ -1,6 +1,5 @@
 package hello.community.domain.community;
 
-import hello.community.domain.groupBuy.GroupBuyDto;
 import hello.community.domain.liked.Liked;
 import hello.community.domain.liked.LikedRepository;
 import hello.community.domain.user.UserRepository;
@@ -15,8 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -83,8 +80,8 @@ public class CommunityService {
         Long userId = Long.parseLong(username);
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
         // 댓글 작성자와 현재 로그인한 유저가 같은지 확인
-        if (comment.getUser().getId() != userId) {
-            throw new IllegalArgumentException("댓글 작성자만 삭제할 수 있습니다.");
+        if (comment.getUser().getId() != userId && comment.getCommunity().getUser().getId() != userId) {
+            throw new IllegalArgumentException("댓글 작성자와 커뮤니티 글 작성자만 삭제할 수 있습니다.");
         }
         commentRepository.delete(comment);
     }
@@ -95,14 +92,33 @@ public class CommunityService {
         community.setView(community.getView() + 1);
         List<Comment> byIdCommunityId = commentRepository.findByCommunity_id(communityId);
 
-        // comment를 commentComponent로 변환
-        List<CommunityDto.CommentComponent> comments = byIdCommunityId.stream().map(comment -> CommunityDto.CommentComponent.builder()
-                .id(comment.getId())
-                .content(comment.getContent())
-                .writerName(comment.getUser().getName())
-                .writerImg(comment.getUser().getPhoto())
-                .createdAt(comment.getCreatedAt())
-                .build()).toList();
+        // who 라는 요소를 채워넣기 위해 본인이 댓글 작성자면 "writer", 커뮤니티 글 작성자면 "owner", 둘다 아니면 "other"로 설정
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+
+        List<CommunityDto.CommentComponent> comments = byIdCommunityId.stream().map(comment -> {
+            String whoComment = "other"; // 기본값은 "other"
+            Long commentUserId = comment.getUser().getId(); // 댓글 작성자의 ID
+
+            if (userId.equals(community.getUser().getId())) {
+                whoComment = "owner"; // 현재 사용자가 커뮤니티 글 작성자인 경우
+            }
+
+            if (userId.equals(commentUserId)) {
+                whoComment = "writer"; // 현재 사용자가 댓글 작성자인 경우
+            }
+
+            return CommunityDto.CommentComponent.builder()
+                    .id(comment.getId())
+                    .content(comment.getContent())
+                    .writerName(comment.getUser().getName())
+                    .writerImg(comment.getUser().getPhoto())
+                    .createdAt(comment.getCreatedAt())
+                    .who(whoComment) // who 값을 설정
+                    .build();
+        }).toList();
+
 
         return CommunityDto.viewGroupBuyInfo.builder()
                 .isWriter(community.getUser().getId().equals(Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName())))
@@ -226,10 +242,9 @@ public class CommunityService {
         }
 
 
-
     }
 
-    public void deleteGroupBuy(Long communityId) {
+    public void deleteCommunity(Long communityId) {
         Community community = communityRepository.findById(communityId).orElseThrow(() -> new IllegalArgumentException("해당 커뮤니티글이 존재하지 않습니다."));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();

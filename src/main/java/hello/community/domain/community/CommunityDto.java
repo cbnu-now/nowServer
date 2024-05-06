@@ -51,6 +51,7 @@ public class CommunityDto {
         private String writerName;
         private String writerImg;
         private LocalDateTime createdAt;
+        private String who;
     }
 
     @Builder

@@ -166,7 +166,7 @@ public class CommunityController {
             description = "커뮤니티 글을 삭제합니다. 본인이 작성자면 삭제합니다."
     )
     public ResponseEntity<UserDto.CheckResult> deleteGroupBuy(@PathVariable Long communityId) {
-        communityService.deleteGroupBuy(communityId);
+        communityService.deleteCommunity(communityId);
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("삭제 완료").build());
     }
 
