@@ -26,7 +26,7 @@ public class GroupBuyDto {
 
     @Builder
     @Data
-    @Schema(description = "모집글에 등록되어야할 정보")
+    @Schema(description = "모집글에서 보여줄 정보")
     public static class viewGroupBuyInfo {
         private String writerName;
         private String writerImg;
@@ -40,6 +40,8 @@ public class GroupBuyDto {
         private LocalDateTime createdAt;
         private Long headCount;
         private Long currentCount;
+        private boolean isWriter;
+
 
         private Long view;
         private Long likes;

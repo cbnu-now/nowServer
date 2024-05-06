@@ -65,6 +65,7 @@ public class GroupBuyService {
                 .title(groupBuy.getTitle())
                 .img(groupBuy.getPhoto())
                 .content(groupBuy.getContent())
+                .isWriter(groupBuy.getUser().getId().equals(user.getId()))
                 .Category(groupBuy.getCategory())
                 .createdAt(groupBuy.getCreatedAt())
                 .headCount(groupBuy.getHeadCount())
