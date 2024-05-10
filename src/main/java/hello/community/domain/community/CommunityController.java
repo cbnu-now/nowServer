@@ -50,13 +50,13 @@ public class CommunityController {
                 communityInfo.getCategory() == null ||
                 communityInfo.getLatitude() == null ||
                 communityInfo.getLongitude() == null ||
-                communityInfo.getAddress() == null){
+                communityInfo.getAddress() == null) {
             return ResponseEntity.badRequest().body(UserDto.CheckResult.builder().result("커뮤니티글 정보가 없습니다.").build());
         }
 
         String url = null;
 
-        if (multipartFile != null)    {
+        if (multipartFile != null) {
             long fileSize = multipartFile.getSize();
             url = s3Upload.upload(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), fileSize);
         }
@@ -64,7 +64,6 @@ public class CommunityController {
         communityService.createCommunity(communityInfo, url);
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("저장 완료").build());
     }
-
 
 
     @PostMapping("/community/like")
@@ -76,7 +75,6 @@ public class CommunityController {
         communityService.likeCommunity(communityId);
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("좋아요 상태 변경 완료").build());
     }
-
 
 
     @GetMapping("/community/{communityId}")
@@ -92,10 +90,29 @@ public class CommunityController {
     @PostMapping("/comment/{communityId}")
     @Operation(
             summary = "댓글 작성",
-            description = "커뮤니티의 id를 이용해 댓글을 작성합니다."
+            description = "댓글을 작성합니다. 이때 사진은 멀티파트 폼데이터로 img라고 해서 보내야합니다.",
+            requestBody = @RequestBody(
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            schema = @Schema(
+                                    type = "string",
+                                    format = "binary"
+                            )
+                    )
+            )
     )
-    public ResponseEntity<UserDto.CheckResult> createComment(@PathVariable Long communityId, String content) {
-        communityService.createComment(communityId, content);
+    public ResponseEntity<UserDto.CheckResult> createComment(
+            @RequestParam(value = "img", required = false) MultipartFile multipartFile,
+            @PathVariable Long communityId, String content
+    ) throws IOException {
+        String url = null;
+
+        if (multipartFile != null) {
+            long fileSize = multipartFile.getSize();
+            url = s3Upload.upload(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), fileSize);
+        }
+
+        communityService.createComment(communityId, content, url);
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("저장 완료").build());
 
     }
@@ -103,10 +120,28 @@ public class CommunityController {
     @PutMapping("/comment/{commentId}")
     @Operation(
             summary = "댓글 수정",
-            description = "댓글의 id를 이용해 댓글을 수정합니다."
+            description = "댓글을 수정합니다. 이때 사진은 멀티파트 폼데이터로 img라고 해서 보내야합니다.",
+            requestBody = @RequestBody(
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            schema = @Schema(
+                                    type = "string",
+                                    format = "binary"
+                            )
+                    )
+            )
     )
-    public ResponseEntity<UserDto.CheckResult> updateComment(@PathVariable Long commentId, String content) {
-        communityService.updateComment(commentId, content);
+    public ResponseEntity<UserDto.CheckResult> updateComment(
+            @RequestParam(value = "img", required = false) MultipartFile multipartFile,
+            @PathVariable Long commentId, String content
+    ) throws IOException {
+        String url = null;
+
+        if (multipartFile != null) {
+            long fileSize = multipartFile.getSize();
+            url = s3Upload.upload(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), fileSize);
+        }
+        communityService.updateComment(commentId, content, url);
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("수정 완료").build());
     }
 
@@ -116,6 +151,7 @@ public class CommunityController {
             description = "댓글의 id를 이용해 댓글을 삭제합니다."
     )
     public ResponseEntity<UserDto.CheckResult> deleteComment(@PathVariable Long commentId) {
+
         communityService.deleteComment(commentId);
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("삭제 완료").build());
     }
@@ -151,7 +187,7 @@ public class CommunityController {
     ) throws IOException {
         String url = null;
 
-        if (multipartFile != null)    {
+        if (multipartFile != null) {
             long fileSize = multipartFile.getSize();
             url = s3Upload.upload(multipartFile.getInputStream(), multipartFile.getOriginalFilename(), fileSize);
         }

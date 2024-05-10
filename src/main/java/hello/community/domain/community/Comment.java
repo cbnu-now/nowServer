@@ -28,4 +28,5 @@ public class Comment {
     @JoinColumn(name = "community_id")
     private Community community;
 
+    private String img;
 }

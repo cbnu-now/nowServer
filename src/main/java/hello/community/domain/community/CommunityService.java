@@ -47,13 +47,15 @@ public class CommunityService {
         communityRepository.save(community);
     }
 
-    public void createComment(Long communityId, String content) {
+    public void createComment(Long communityId, String content, String url) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Long userId = Long.parseLong(username);
         Users user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         Community community = communityRepository.findById(communityId).orElseThrow(() -> new IllegalArgumentException("해당 커뮤니티글이 존재하지 않습니다."));
         Comment comment = new Comment();
+        if(url != null)
+            comment.setImg(url);
         comment.setContent(content);
         comment.setUser(user);
         comment.setCommunity(community);
@@ -61,7 +63,7 @@ public class CommunityService {
         commentRepository.save(comment);
     }
 
-    public void updateComment(Long commentId, String content) {
+    public void updateComment(Long commentId, String content, String url) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Long userId = Long.parseLong(username);
@@ -72,6 +74,8 @@ public class CommunityService {
         }
 
         comment.setContent(content);
+        if(url!=null)
+            comment.setImg(url);
     }
 
     public void deleteComment(Long commentId) {
@@ -111,6 +115,7 @@ public class CommunityService {
 
             return CommunityDto.CommentComponent.builder()
                     .id(comment.getId())
+                    .img(comment.getImg())
                     .content(comment.getContent())
                     .writerName(comment.getUser().getName())
                     .writerImg(comment.getUser().getPhoto())
