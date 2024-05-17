@@ -58,6 +58,8 @@ public class GroupBuyService {
         groupBuy.setView(groupBuy.getView() + 1);
 
         GroupBuyDto.viewGroupBuyInfo viewGroupBuyInfo = GroupBuyDto.viewGroupBuyInfo.builder()
+                .latitude(groupBuy.getLatitude())
+                .longitude(groupBuy.getLongitude())
                 .spotName(groupBuy.getSpotName())
                 .writerName(user.getName())
                 .writerImg(user.getPhoto())
