@@ -1,5 +1,7 @@
 package hello.community.domain.user;
 
+import hello.community.domain.chat.Chat;
+import hello.community.domain.chat.UserChatRoom;
 import hello.community.domain.community.Comment;
 import hello.community.domain.community.Community;
 import hello.community.domain.groupBuy.GroupBuy;
@@ -36,4 +38,10 @@ public class Users {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Community> communities = new ArrayList<>();
 
+
+    @OneToMany(mappedBy = "user")
+    private List<UserChatRoom> userChatRooms = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Chat> chats = new ArrayList<>();
 }

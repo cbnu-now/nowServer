@@ -1,11 +1,14 @@
 package hello.community.domain.groupBuy;
 
+import hello.community.domain.chat.Waiting;
 import hello.community.domain.user.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -43,5 +46,6 @@ public class GroupBuy {
     @JoinColumn(name = "user_id")
     private Users user;
 
-
+    @OneToMany(mappedBy = "groupBuy", cascade = CascadeType.ALL)
+    private List<Waiting> waiting = new ArrayList<>();
 }
