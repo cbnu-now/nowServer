@@ -1,22 +1,29 @@
 package hello.community.domain.chat;
 
+import hello.community.domain.user.Users;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import java.util.List;
-import jakarta.persistence.OneToMany;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
 @Getter
 @Setter
-@Entity
 public class ChatRoom {
     @Id
     @GeneratedValue
+    @Column(name = "chatroom_id")
     private Long id;
-    private String name;
+
+    private String chatRoomName;
+
+    // 채팅
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    private List<Chat> chats = new ArrayList<>();
 
     @OneToMany(mappedBy = "chatRoom")
-    private List<ChatMessage> messages;
+    private List<UserChatRoom> userChatRooms = new ArrayList<>();
+
 }

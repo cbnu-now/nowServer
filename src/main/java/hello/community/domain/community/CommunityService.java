@@ -15,9 +15,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
-@Transactional
-@RequiredArgsConstructor
+@Service    //해당 클래스가 서비스 역할을 하는 Spring Bean임을 나타냄
+@Transactional  //메서드가 트랜잭션 안에서 실행됨을 보장합니다. (데이터의 일관성을 유지)
+@RequiredArgsConstructor //Lombok 어노테이션으로, final로 선언된 모든 필드에 대해 생성자를 자동으로 생성
 public class CommunityService {
     private final UserRepository userRepository;
     private final LikedRepository likedRepository;
@@ -26,11 +26,12 @@ public class CommunityService {
 
 
     public void createCommunity(CommunityDto.CommunityInfo communityInfo, String url) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); //SecurityContextHolder를 통해 현재 인증된 사용자의 정보를 가져옵니다.
         String username = authentication.getName();
         Long userId = Long.parseLong(username);
         Users user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+        //Community 객체를 생성하고, 전달받은 정보(CommunityDto.CommunityInfo)와 URL을 이용해 초기화
         Community community = new Community();
         community.setPhoto(url);
         community.setTitle(communityInfo.getTitle());
@@ -44,16 +45,16 @@ public class CommunityService {
         community.setCreatedAt(LocalDateTime.now());
         community.setLikes(0L);
         community.setView(0L);
-        communityRepository.save(community);
+        communityRepository.save(community);    //communityRepository를 통해 데이터베이스에 저장
     }
 
     public void createComment(Long communityId, String content, String url) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); //현재 인증된 사용자 정보를 가져옵니다
         String username = authentication.getName();
         Long userId = Long.parseLong(username);
         Users user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        Community community = communityRepository.findById(communityId).orElseThrow(() -> new IllegalArgumentException("해당 커뮤니티글이 존재하지 않습니다."));
-        Comment comment = new Comment();
+        Community community = communityRepository.findById(communityId).orElseThrow(() -> new IllegalArgumentException("해당 커뮤니티글이 존재하지 않습니다."));//communityId를 이용해 해당 커뮤니티 글을 찾습니다.
+        Comment comment = new Comment();    //Comment 객체를 생성하고 초기화한 뒤, 데이터베이스에 저장
         if(url != null)
             comment.setImg(url);
         comment.setContent(content);
@@ -63,6 +64,7 @@ public class CommunityService {
         commentRepository.save(comment);
     }
 
+    //commentId로 댓글을 찾고, 현재 로그인한 사용자와 댓글 작성자가 같은지 확인합니다.
     public void updateComment(Long commentId, String content, String url) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -78,6 +80,7 @@ public class CommunityService {
             comment.setImg(url);
     }
 
+    // 댓글을 찾고, 현재 로그인한 사용자와 댓글 작성자 또는 커뮤니티 글 작성자가 같은지 확인합니다.
     public void deleteComment(Long commentId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();

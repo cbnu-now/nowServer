@@ -1,8 +1,8 @@
 package hello.community.domain.community;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema;  //Swagger/OpenAPI의 스키마 어노테이션을 사용하여 클래스와 필드에 대한 설명을 제공
 import lombok.Builder;
-import lombok.Data;
+import lombok.Data; //어노테이션을 사용하여 모든 필드에 대한 getter, setter, toString, equals, hashCode 메서드를 자동으로 생성
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,9 +10,9 @@ import java.util.List;
 @Data
 public class CommunityDto {
 
-    @Builder
-    @Data
-    @Schema(description = "커뮤니티글에 등록되어야할 정보")
+    @Builder    //빌더 패턴을 통해 객체를 유연하게 생성
+    @Data   //Lombok을 사용하여 모든 필드에 대한 getter, setter, toString, equals, hashCode 메서드를 자동으로 생성
+    @Schema(description = "커뮤니티글에 등록되어야할 정보")   //Swagger/OpenAPI 문서에 이 클래스가 커뮤니티 글 등록 시 사용되는 정보를 담고 있음을 설명
     public static class CommunityInfo {
         private String title;
         private String content;
