@@ -6,10 +6,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;  // 2번 API 추가된 import 문
+import org.springframework.security.core.context.SecurityContextHolder; // 2번 API 추가된 import 문
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Tag(name = "Chat", description = "채팅 관련 API 입니다.")
 @RestController
@@ -28,6 +32,18 @@ public class ChatController {
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("손들기 완료").build());
     }
 
+    @GetMapping("/notifications")
+    @Operation(
+            summary = "손들기 알림 목록 조회",
+            description = "손들기 요청한 사용자의 정보를 배열로 조회합니다."
+    )
+    public ResponseEntity<List<WaitingNotificationDto>> getWaitingNotifications() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
 
+        List<WaitingNotificationDto> notifications = chatService.getWaitingNotifications(userId);
+        return ResponseEntity.ok(notifications);
+    }
 
 }
