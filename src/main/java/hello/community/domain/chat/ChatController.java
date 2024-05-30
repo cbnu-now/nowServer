@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.List;
 
@@ -44,6 +45,16 @@ public class ChatController {
 
         List<WaitingNotificationDto> notifications = chatService.getWaitingNotifications(userId);
         return ResponseEntity.ok(notifications);
+    }
+
+    @PutMapping("/acceptWaiting/{waitingId}")
+    @Operation(
+            summary = "손들기 수락",
+            description = "대기자의 손들기 요청을 수락합니다."
+    )
+    public ResponseEntity<UserDto.CheckResult> acceptWaiting(@PathVariable Long waitingId) {
+        chatService.acceptWaiting(waitingId);
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("수락 완료").build());
     }
 
 }

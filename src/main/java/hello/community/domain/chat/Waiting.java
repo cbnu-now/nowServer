@@ -27,6 +27,8 @@ public class Waiting {
 
     private LocalDateTime createdAt;
 
+    private boolean accepted; // 3번 API 추가
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
