@@ -57,4 +57,17 @@ public class ChatController {
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("수락 완료").build());
     }
 
+    @GetMapping("/chatrooms")
+    @Operation(
+            summary = "채팅방 목록 조회",
+            description = "채팅방 목록을 조회합니다."
+    )
+    public ResponseEntity<List<ChatRoomDto>> getChatRooms() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+
+        List<ChatRoomDto> chatRooms = chatService.getChatRooms(userId);
+        return ResponseEntity.ok(chatRooms);
+    }
 }

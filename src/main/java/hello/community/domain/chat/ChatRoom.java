@@ -1,6 +1,6 @@
 package hello.community.domain.chat;
 
-import hello.community.domain.user.Users;
+import hello.community.domain.groupBuy.GroupBuy;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +17,10 @@ public class ChatRoom {
     @Column(name = "chatroom_id")
     private Long id;
 
-    private String chatRoomName;
+    // `chatRoomName` 필드를 제거하고 `GroupBuy`와 연관 관계 설정
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "groupbuy_id")
+    private GroupBuy groupBuy;
 
     // 채팅
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
@@ -25,5 +28,4 @@ public class ChatRoom {
 
     @OneToMany(mappedBy = "chatRoom")
     private List<UserChatRoom> userChatRooms = new ArrayList<>();
-
 }

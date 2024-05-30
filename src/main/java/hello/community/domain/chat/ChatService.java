@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;  //2번 APi 추가
 import java.util.stream.Collectors;     //2번 APi 추가
+import java.time.LocalDateTime; //4번 API 추가
 
 @Service
 @Transactional
@@ -24,6 +25,7 @@ public class ChatService {
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;    //3번 APi 추가
     private final UserChatRoomRepository userChatRoomRepository; //3번 APi 추가
+    private final ChatRepository chatRepository;
 
     public void raiseHand(Long groupBuyId) {
         GroupBuy findedGroupBuy = groupBuyRepository.findById(groupBuyId).orElseThrow(() -> new IllegalArgumentException("해당 모집글이 존재하지 않습니다."));
@@ -40,6 +42,7 @@ public class ChatService {
         Waiting waiting = new Waiting();
         waiting.setUser(user);
         waiting.setGroupBuy(findedGroupBuy);
+        waiting.setAccepted(false); // 초기 상태를 0(false)로 설정
         waitingRepository.save(waiting);
     }
 
@@ -74,7 +77,7 @@ public class ChatService {
         if (acceptedWaitings.size() >= groupBuy.getHeadCount()) {
             // 채팅방 생성
             ChatRoom chatRoom = new ChatRoom();
-            chatRoom.setChatRoomName(groupBuy.getTitle());
+            chatRoom.setGroupBuy(groupBuy); // 설정된 groupBuy 추가
             chatRoomRepository.save(chatRoom);
 
             // 채팅방에 사용자 추가
@@ -85,5 +88,33 @@ public class ChatService {
                 userChatRoomRepository.save(userChatRoom);
             }
         }
+    }
+
+    // 4번 API
+    // 채팅방 목록 조회 메서드 추가
+    public List<ChatRoomDto> getChatRooms(Long userId) {
+        List<UserChatRoom> userChatRooms = userChatRoomRepository.findByUserId(userId);
+        return userChatRooms.stream().map(userChatRoom -> {
+            ChatRoom chatRoom = userChatRoom.getChatRoom();
+            List<String> userProfileImgUrls = chatRoom.getUserChatRooms().stream()
+                    .map(uc -> uc.getUser().getPhoto())
+                    .collect(Collectors.toList());
+
+            String lastMessage = chatRoom.getChats().isEmpty() ? "" : chatRoom.getChats().get(chatRoom.getChats().size() - 1).getContent();
+            LocalDateTime lastMessageTime = chatRoom.getChats().isEmpty() ? null : chatRoom.getChats().get(chatRoom.getChats().size() - 1).getCreatedAt();
+            int unreadMessagesCount = chatRepository.countUnreadMessages(chatRoom.getId(), userId);
+
+            return new ChatRoomDto(
+                    chatRoom.getId(),
+                    userProfileImgUrls,
+                    chatRoom.getGroupBuy().getPhoto(), // 모집글 게시글 섬네일 이미지 url
+                    chatRoom.getGroupBuy().getTitle(), // 채팅방 제목
+                    chatRoom.getUserChatRooms().size(), // 채팅자 수
+                    lastMessage, // 마지막 채팅 메시지
+                    lastMessageTime, // 마지막 채팅 시간
+                    unreadMessagesCount // 사용자가 채팅방에서 읽지 않은 메시지 개수
+            );
+        }).collect(Collectors.toList());
+
     }
 }
