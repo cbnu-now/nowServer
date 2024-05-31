@@ -79,7 +79,7 @@ public class UserController {
             description = "토큰을 기반으로 유저 정보를 조회합니다."
     )
     @GetMapping("/user")
-    public ResponseEntity<Users> getUserInfo() {
+    public ResponseEntity<UserDto.ProvideInfo>  getUserInfo() {
         return ResponseEntity.ok(userService.getUserInfo());
     }
 

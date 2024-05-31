@@ -10,6 +10,7 @@ import hello.community.domain.liked.Liked;
 import hello.community.domain.liked.LikedRepository;
 import hello.community.global.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -70,11 +71,18 @@ public class UserService {
 
 
 
-    public Users getUserInfo() {
+    public UserDto.ProvideInfo getUserInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Long userId = Long.parseLong(username);
-        return userRepository.findById(userId).get();
+        Users user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        UserDto.ProvideInfo provideInfo = UserDto.ProvideInfo.builder()
+                .name(user.getName())
+                .photo(user.getPhoto())
+                .id(user.getId())
+                .phone(user.getPhone())
+                .build();
+        return provideInfo;
     }
 
 

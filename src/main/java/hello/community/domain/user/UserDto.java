@@ -51,5 +51,10 @@ public class UserDto {
     @Data
     @Schema(description = "개인정보")
     public static class ProvideInfo {
+        String name;
+        String photo;
+        String phone;
+        Long id;
+
     }
 }
