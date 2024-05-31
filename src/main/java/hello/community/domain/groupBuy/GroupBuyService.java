@@ -81,7 +81,7 @@ public class GroupBuyService {
 
     }
 
-    public List<GroupBuyDto.viewGroupBuyListInfo> getGroupBuyListByLocation(Double latitude, Double longitude) {
+    public List<GroupBuyDto.viewGroupBuyListInfo> getGroupBuyListByLocation(Double latitude, Double longitude,Long distance2) {
         List<GroupBuy> allGroupBuys = groupBuyRepository.findAll();// 데이터베이스에서 모든 게시물 가져오기
         List<GroupBuyDto.viewGroupBuyListInfo> nearbyGroupBuys = new ArrayList<>();
 
@@ -100,7 +100,7 @@ public class GroupBuyService {
         for (GroupBuy groupBuy : allGroupBuys) {
             double distance = calculateDistanceInMeter(latitude, longitude, groupBuy.getLatitude(), groupBuy.getLongitude());
 
-            if (distance <= 300) { // 300m 이내
+            if (distance <= distance2) { // 300m 이내
                 boolean isLiked = likedGroupBuyIds.contains(groupBuy.getId());
 
                 GroupBuyDto.viewGroupBuyListInfo viewGroupBuyListInfo = GroupBuyDto.viewGroupBuyListInfo.builder()

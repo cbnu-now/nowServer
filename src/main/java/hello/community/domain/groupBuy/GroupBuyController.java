@@ -80,8 +80,8 @@ public class GroupBuyController {
             summary = "현재 위치의 모집글 리스트 조회",
             description = "모집글의 id를 이용해 모집글 정보를 조회합니다."
     )
-    public ResponseEntity<List<GroupBuyDto.viewGroupBuyListInfo>> getGroupBuyListByLocation(Double Latitude, Double Longitude) {
-        List<GroupBuyDto.viewGroupBuyListInfo> groupBuyList = groupBuyService.getGroupBuyListByLocation(Latitude, Longitude);
+    public ResponseEntity<List<GroupBuyDto.viewGroupBuyListInfo>> getGroupBuyListByLocation(Double Latitude, Double Longitude, Long distance) {
+        List<GroupBuyDto.viewGroupBuyListInfo> groupBuyList = groupBuyService.getGroupBuyListByLocation(Latitude, Longitude,distance);
         return ResponseEntity.ok(groupBuyList);
     }
 
