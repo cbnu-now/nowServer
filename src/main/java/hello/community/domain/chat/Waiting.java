@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 public class Waiting {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "waiting_id")
     private Long id;
 

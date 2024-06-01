@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class UserChatRoom {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_chatroom_id")
     private Long id;
 
