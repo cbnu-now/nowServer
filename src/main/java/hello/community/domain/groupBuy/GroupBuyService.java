@@ -57,6 +57,11 @@ public class GroupBuyService {
         Users user = userRepository.findById(groupBuy.getUser().getId()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         groupBuy.setView(groupBuy.getView() + 1);
 
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId2 = Long.parseLong(username);
+
         GroupBuyDto.viewGroupBuyInfo viewGroupBuyInfo = GroupBuyDto.viewGroupBuyInfo.builder()
                 .latitude(groupBuy.getLatitude())
                 .longitude(groupBuy.getLongitude())
@@ -67,7 +72,7 @@ public class GroupBuyService {
                 .title(groupBuy.getTitle())
                 .img(groupBuy.getPhoto())
                 .content(groupBuy.getContent())
-                .isWriter(groupBuy.getUser().getId().equals(user.getId()))
+                .isWriter(groupBuy.getUser().getId().equals(userId2))
                 .Category(groupBuy.getCategory())
                 .createdAt(groupBuy.getCreatedAt())
                 .headCount(groupBuy.getHeadCount())
