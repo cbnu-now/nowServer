@@ -41,6 +41,7 @@ public class GroupBuyDto {
         private Long headCount;
         private Long currentCount;
         private boolean isWriter;
+        private boolean isLiked;
 
         private Double latitude;
         private Double longitude;

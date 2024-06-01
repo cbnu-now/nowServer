@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @Configuration
 public class SecurityConfig {
     private final String[] allowedUrls = {
-            "/user","/login","/user/reset","/review/*","comment/*","/review","/groupbuy/*","/community/*","/comment/*",
+            "/user","/login","/user/reset","/user/phone", "/user/doublecheck", "/review/*","comment/*","/review","/groupbuy/*","/community/*","/comment/*",
             // Swagger UI 경로 추가
             "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**","/api-docs"
     }; // 인증 없이 접근 가능한 URL 목록

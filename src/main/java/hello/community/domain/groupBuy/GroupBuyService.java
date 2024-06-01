@@ -61,6 +61,15 @@ public class GroupBuyService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Long userId2 = Long.parseLong(username);
+        Liked liked = likedRepository.findByUserIdAndGroupBuyId(userId2, id);
+
+        boolean isLiked;
+        if (liked == null) {
+            isLiked = false;
+        } else {
+            isLiked = true;
+        }
+
 
         GroupBuyDto.viewGroupBuyInfo viewGroupBuyInfo = GroupBuyDto.viewGroupBuyInfo.builder()
                 .latitude(groupBuy.getLatitude())
@@ -73,6 +82,7 @@ public class GroupBuyService {
                 .img(groupBuy.getPhoto())
                 .content(groupBuy.getContent())
                 .isWriter(groupBuy.getUser().getId().equals(userId2))
+                .isLiked(isLiked)
                 .Category(groupBuy.getCategory())
                 .createdAt(groupBuy.getCreatedAt())
                 .headCount(groupBuy.getHeadCount())
