@@ -76,4 +76,13 @@ public class ChatController {
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("메시지 전송 완료").build());
     }
 
+    @GetMapping("/chatrooms/{chatRoomId}/records/{userId}")
+    @Operation(
+            summary = "채팅방 상세 기록 조회",
+            description = "채팅방의 상세 채팅 기록을 조회합니다."
+    )
+    public ResponseEntity<List<ChatRecordDto>> getChatRecords(@PathVariable Long chatRoomId, @PathVariable Long userId) {
+        List<ChatRecordDto> chatRecords = chatService.getChatRecords(chatRoomId, userId);
+        return ResponseEntity.ok(chatRecords);
+    }
 }
