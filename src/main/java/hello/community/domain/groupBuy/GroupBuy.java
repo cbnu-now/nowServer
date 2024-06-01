@@ -28,7 +28,8 @@ public class GroupBuy {
     private String photo;
 
     private Long headCount;
-    private Long currentCount;
+    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    private Long currentCount = 0L;
 
     private Double latitude;
     private Double longitude;
