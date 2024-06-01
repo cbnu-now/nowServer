@@ -28,7 +28,9 @@ public class ChatService {
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final UserChatRoomRepository userChatRoomRepository;
+    private final ChatRepository chatRepository;
 
+    // 모집글 상세 액티비티 하단의 손들기 버튼 클릭 시 대기자 테이블에 요청자에 대한 튜플 추가
     public void raiseHand(Long groupBuyId) {
         GroupBuy findedGroupBuy = groupBuyRepository.findById(groupBuyId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 모집글이 존재하지 않습니다."));
@@ -49,6 +51,7 @@ public class ChatService {
         waitingRepository.save(waiting);
     }
 
+    // 알림 목록 액티비티 내에서 손들기를 요청한 사용자의 정보를 배열로 조회
     public List<WaitingNotificationDto> getWaitingNotifications(Long groupBuyId) {
         List<Waiting> waitings = waitingRepository.findByGroupBuyId(groupBuyId);
         return waitings.stream().map(waiting -> {
@@ -65,6 +68,7 @@ public class ChatService {
         }).collect(Collectors.toList());
     }
 
+    // 손들기 수락 & 채팅방 생성
     public void acceptWaiting(Long waitingId) {
         // 대기자 수락 로직
         Waiting waiting = waitingRepository.findById(waitingId)
@@ -101,6 +105,32 @@ public class ChatService {
         }
     }
 
+    // 채팅방 목록 액티비티 내에 채팅방 정보 목록이 배열로 조회
+    // 채팅방 목록 조회 메서드 추가
+    // 채팅방 목록 조회 메서드 추가
+    public List<ChatRoomListDto> getChatRoomList(Long userId) {
+        List<UserChatRoom> userChatRooms = userChatRoomRepository.findByUserId(userId);
+
+        return userChatRooms.stream().map(userChatRoom -> {
+            ChatRoom chatRoom = userChatRoom.getChatRoom();
+            List<String> participantImages = chatRoom.getUserChatRooms().stream()
+                    .map(uc -> uc.getUser().getPhoto())
+                    .collect(Collectors.toList());
+            GroupBuy groupBuy = chatRoom.getGroupBuy();
+            Chat lastChat = chatRepository.findTopByChatRoomOrderByCreatedAtDesc(chatRoom);
+            long unreadCount = chatRepository.countByChatRoomAndCreatedAtAfter(chatRoom, userChatRoom.getLastReadTime());
+
+            return new ChatRoomListDto(
+                    participantImages, // 모든 참여자의 이미지 URL 리스트
+                    groupBuy.getPhoto(),
+                    groupBuy.getTitle(),
+                    chatRoom.getUserChatRooms().size(),
+                    lastChat != null ? lastChat.getContent() : "",
+                    lastChat != null ? lastChat.getCreatedAt() : null,
+                    (int) unreadCount
+            );
+        }).collect(Collectors.toList());
+    }
 
 
 }
