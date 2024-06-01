@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -110,7 +111,6 @@ public class ChatService {
 
     // 채팅방 목록 액티비티 내에 채팅방 정보 목록이 배열로 조회
     // 채팅방 목록 조회 메서드 추가
-    // 채팅방 목록 조회 메서드 추가
     public List<ChatRoomListDto> getChatRoomList(Long userId) {
         List<UserChatRoom> userChatRooms = userChatRoomRepository.findByUserId(userId);
 
@@ -135,7 +135,7 @@ public class ChatService {
         }).collect(Collectors.toList());
     }
 
-    // 5. 채팅메시지 전송
+    // 5. 채팅 메시지 전송
     public void sendMessage(Long chatRoomId, ChatMessageDto chatMessageDto) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다."));
@@ -153,7 +153,8 @@ public class ChatService {
         chat.setChatRoom(chatRoom);
         chatRepository.save(chat);
 
-        UserChatRoom userChatRoom = userChatRoomRepository.findByUserIdAndChatRoomId(userId, chatRoomId);
+        Optional<UserChatRoom> optionalUserChatRoom = userChatRoomRepository.findByUserIdAndChatRoomId(userId, chatRoomId);
+        UserChatRoom userChatRoom = optionalUserChatRoom.orElseThrow(() -> new IllegalArgumentException("해당 채팅방에 사용자가 존재하지 않습니다."));
         userChatRoom.setLastReadTime(LocalDateTime.now());
         userChatRoomRepository.save(userChatRoom);
     }
@@ -173,7 +174,7 @@ public class ChatService {
 
         for (Chat chat : chats) {
             boolean isContinuousMessage = previousUserId != null && previousUserId.equals(chat.getUser().getId());
-            boolean isMyMessage = chat.getUser().getId().equals(userId);
+            boolean isMyMessage = chat.getUser().getId().equals(currentUser.getId());
 
             chatRecords.add(new ChatRecordDto(
                     chat.getUser().getPhoto(),
@@ -190,4 +191,16 @@ public class ChatService {
 
         return chatRecords;
     }
+
+    // 7. 채팅방 나가시 시에, 채팅방 참여자 정보에서 해당 유저 데이터를 제거함.
+    @Transactional
+    public void leaveChatRoom(Long chatRoomId, Long userId) {
+        Optional<UserChatRoom> optionalUserChatRoom = userChatRoomRepository.findByUserIdAndChatRoomId(userId, chatRoomId);
+        UserChatRoom userChatRoom = optionalUserChatRoom.orElseThrow(() -> new IllegalArgumentException("해당 채팅방에 사용자가 존재하지 않습니다."));
+
+        userChatRoomRepository.delete(userChatRoom);
+    }
+
+
+
 }

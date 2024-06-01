@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.List;
 
@@ -85,4 +86,15 @@ public class ChatController {
         List<ChatRecordDto> chatRecords = chatService.getChatRecords(chatRoomId, userId);
         return ResponseEntity.ok(chatRecords);
     }
+
+    @DeleteMapping("/chatrooms/{chatRoomId}/users/{userId}")
+    @Operation(
+            summary = "채팅방 나가기",
+            description = "사용자가 특정 채팅방에서 나갑니다."
+    )
+    public ResponseEntity<UserDto.CheckResult> leaveChatRoom(@PathVariable Long chatRoomId, @PathVariable Long userId) {
+        chatService.leaveChatRoom(chatRoomId, userId);
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("채팅방 나가기 완료").build());
+    }
+
 }
