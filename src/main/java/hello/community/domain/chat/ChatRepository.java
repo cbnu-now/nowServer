@@ -11,4 +11,7 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
 
     // 채팅방 내 특정 시간 이후의 메시지 수를 세는 메서드
     long countByChatRoomAndCreatedAtAfter(ChatRoom chatRoom, LocalDateTime lastReadTime);
+
+    // 채팅방 내 메시지를 생성 시간순으로 정렬하여 가져오는 메서드
+    List<Chat> findByChatRoomOrderByCreatedAtAsc(ChatRoom chatRoom);
 }

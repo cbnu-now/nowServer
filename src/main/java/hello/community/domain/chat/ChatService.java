@@ -13,8 +13,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @Service
 @Transactional
@@ -107,7 +111,6 @@ public class ChatService {
 
     // 채팅방 목록 액티비티 내에 채팅방 정보 목록이 배열로 조회
     // 채팅방 목록 조회 메서드 추가
-    // 채팅방 목록 조회 메서드 추가
     public List<ChatRoomListDto> getChatRoomList(Long userId) {
         List<UserChatRoom> userChatRooms = userChatRoomRepository.findByUserId(userId);
 
@@ -131,6 +134,73 @@ public class ChatService {
             );
         }).collect(Collectors.toList());
     }
+
+    // 5. 채팅 메시지 전송
+    public void sendMessage(Long chatRoomId, ChatMessageDto chatMessageDto) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다."));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        Chat chat = new Chat();
+        chat.setContent(chatMessageDto.getContent());
+        chat.setCreatedAt(LocalDateTime.now());
+        chat.setUser(user);
+        chat.setChatRoom(chatRoom);
+        chatRepository.save(chat);
+
+        Optional<UserChatRoom> optionalUserChatRoom = userChatRoomRepository.findByUserIdAndChatRoomId(userId, chatRoomId);
+        UserChatRoom userChatRoom = optionalUserChatRoom.orElseThrow(() -> new IllegalArgumentException("해당 채팅방에 사용자가 존재하지 않습니다."));
+        userChatRoom.setLastReadTime(LocalDateTime.now());
+        userChatRoomRepository.save(userChatRoom);
+    }
+
+    // 6.채팅방 상세 액티비티 내에 사용자들의 채팅 기록
+    public List<ChatRecordDto> getChatRecords(Long chatRoomId, Long userId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다."));
+
+        List<Chat> chats = chatRepository.findByChatRoomOrderByCreatedAtAsc(chatRoom);
+        Users currentUser = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        List<ChatRecordDto> chatRecords = new ArrayList<>();
+        Long previousUserId = null;
+        String chatRoomTitle = chatRoom.getGroupBuy().getTitle(); // 채팅방 제목 가져오기
+
+        for (Chat chat : chats) {
+            boolean isContinuousMessage = previousUserId != null && previousUserId.equals(chat.getUser().getId());
+            boolean isMyMessage = chat.getUser().getId().equals(currentUser.getId());
+
+            chatRecords.add(new ChatRecordDto(
+                    chat.getUser().getPhoto(),
+                    chat.getUser().getName(),
+                    chat.getContent(),
+                    chat.getCreatedAt(),
+                    isContinuousMessage,
+                    isMyMessage,
+                    chatRoomTitle // 채팅방 제목 추가
+            ));
+
+            previousUserId = chat.getUser().getId();
+        }
+
+        return chatRecords;
+    }
+
+    // 7. 채팅방 나가시 시에, 채팅방 참여자 정보에서 해당 유저 데이터를 제거함.
+    @Transactional
+    public void leaveChatRoom(Long chatRoomId, Long userId) {
+        Optional<UserChatRoom> optionalUserChatRoom = userChatRoomRepository.findByUserIdAndChatRoomId(userId, chatRoomId);
+        UserChatRoom userChatRoom = optionalUserChatRoom.orElseThrow(() -> new IllegalArgumentException("해당 채팅방에 사용자가 존재하지 않습니다."));
+
+        userChatRoomRepository.delete(userChatRoom);
+    }
+
 
 
 }

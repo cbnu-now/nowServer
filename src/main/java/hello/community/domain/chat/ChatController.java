@@ -13,8 +13,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.List;
+
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @Tag(name = "Chat", description = "채팅 관련 API 입니다.")
 @RestController
@@ -62,4 +66,35 @@ public class ChatController {
         List<ChatRoomListDto> chatRooms = chatService.getChatRoomList(userId);
         return ResponseEntity.ok(chatRooms);
     }
+
+    @PutMapping("/chatrooms/{chatRoomId}/messages")
+    @Operation(
+            summary = "채팅 메시지 전송",
+            description = "채팅방에 메시지를 전송합니다."
+    )
+    public ResponseEntity<UserDto.CheckResult> sendMessage(@PathVariable Long chatRoomId, @RequestBody ChatMessageDto chatMessageDto) {
+        chatService.sendMessage(chatRoomId, chatMessageDto);
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("메시지 전송 완료").build());
+    }
+
+    @GetMapping("/chatrooms/{chatRoomId}/records/{userId}")
+    @Operation(
+            summary = "채팅방 상세 기록 조회",
+            description = "채팅방의 상세 채팅 기록을 조회합니다."
+    )
+    public ResponseEntity<List<ChatRecordDto>> getChatRecords(@PathVariable Long chatRoomId, @PathVariable Long userId) {
+        List<ChatRecordDto> chatRecords = chatService.getChatRecords(chatRoomId, userId);
+        return ResponseEntity.ok(chatRecords);
+    }
+
+    @DeleteMapping("/chatrooms/{chatRoomId}/users/{userId}")
+    @Operation(
+            summary = "채팅방 나가기",
+            description = "사용자가 특정 채팅방에서 나갑니다."
+    )
+    public ResponseEntity<UserDto.CheckResult> leaveChatRoom(@PathVariable Long chatRoomId, @PathVariable Long userId) {
+        chatService.leaveChatRoom(chatRoomId, userId);
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("채팅방 나가기 완료").build());
+    }
+
 }
