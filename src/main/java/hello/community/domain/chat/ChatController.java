@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @Tag(name = "Chat", description = "채팅 관련 API 입니다.")
 @RestController
 @RequiredArgsConstructor
@@ -28,6 +30,14 @@ public class ChatController {
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("손들기 완료").build());
     }
 
-
+    @GetMapping("/notifications/{groupBuyId}")
+    @Operation(
+            summary = "손들기 알림 목록 조회",
+            description = "손들기 요청한 사용자의 정보를 배열로 조회합니다."
+    )
+    public ResponseEntity<List<WaitingNotificationDto>> getWaitingNotifications(@PathVariable Long groupBuyId) {
+        List<WaitingNotificationDto> notifications = chatService.getWaitingNotifications(groupBuyId);
+        return ResponseEntity.ok(notifications);
+    }
 
 }

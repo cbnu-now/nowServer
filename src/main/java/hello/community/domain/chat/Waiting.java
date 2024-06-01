@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
+
 @Entity
 @Getter
 @Setter
@@ -22,4 +25,14 @@ public class Waiting {
     @ManyToOne
     @JoinColumn(name = "groupbuy_id")
     private GroupBuy groupBuy;
+
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    private boolean accepted = false; // 기본값을 false로 설정
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

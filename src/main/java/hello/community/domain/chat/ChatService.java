@@ -11,6 +11,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -36,5 +39,21 @@ public class ChatService {
         waiting.setUser(user);
         waiting.setGroupBuy(findedGroupBuy);
         waitingRepository.save(waiting);
+    }
+    // 2. 알림 목록 액티비티 내에서 손들기를 요청한 사용자의 정보를 배열로 조회
+    public List<WaitingNotificationDto> getWaitingNotifications(Long groupBuyId) {
+        List<Waiting> waitings = waitingRepository.findByGroupBuyId(groupBuyId);
+        return waitings.stream().map(waiting -> {
+            GroupBuy groupBuy = waiting.getGroupBuy();
+            return new WaitingNotificationDto(
+                    waiting.getUser().getName(),
+                    waiting.getUser().getPhoto(),
+                    groupBuy.getTitle(),
+                    groupBuy.getPhoto(),
+                    waiting.getCreatedAt(),
+                    groupBuy.getHeadCount(),
+                    groupBuy.getCurrentCount()
+            );
+        }).collect(Collectors.toList());
     }
 }
