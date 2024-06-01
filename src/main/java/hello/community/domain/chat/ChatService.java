@@ -16,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import java.time.LocalDateTime;
+
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -132,5 +135,27 @@ public class ChatService {
         }).collect(Collectors.toList());
     }
 
+    // 5. 채팅메시지 전송
+    public void sendMessage(Long chatRoomId, ChatMessageDto chatMessageDto) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다."));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Long userId = Long.parseLong(username);
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        Chat chat = new Chat();
+        chat.setContent(chatMessageDto.getContent());
+        chat.setCreatedAt(LocalDateTime.now());
+        chat.setUser(user);
+        chat.setChatRoom(chatRoom);
+        chatRepository.save(chat);
+
+        UserChatRoom userChatRoom = userChatRoomRepository.findByUserIdAndChatRoomId(userId, chatRoomId);
+        userChatRoom.setLastReadTime(LocalDateTime.now());
+        userChatRoomRepository.save(userChatRoom);
+    }
 
 }

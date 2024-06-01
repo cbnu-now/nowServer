@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.RequestBody;
+
+
 @Tag(name = "Chat", description = "채팅 관련 API 입니다.")
 @RestController
 @RequiredArgsConstructor
@@ -62,4 +65,15 @@ public class ChatController {
         List<ChatRoomListDto> chatRooms = chatService.getChatRoomList(userId);
         return ResponseEntity.ok(chatRooms);
     }
+
+    @PutMapping("/chatrooms/{chatRoomId}/messages")
+    @Operation(
+            summary = "채팅 메시지 전송",
+            description = "채팅방에 메시지를 전송합니다."
+    )
+    public ResponseEntity<UserDto.CheckResult> sendMessage(@PathVariable Long chatRoomId, @RequestBody ChatMessageDto chatMessageDto) {
+        chatService.sendMessage(chatRoomId, chatMessageDto);
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("메시지 전송 완료").build());
+    }
+
 }
