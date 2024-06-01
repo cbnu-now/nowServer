@@ -27,4 +27,6 @@ public class Chat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chatroom_id")
     private ChatRoom chatRoom;
+
+    // git test
 }
