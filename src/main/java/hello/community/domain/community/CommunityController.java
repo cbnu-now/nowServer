@@ -47,10 +47,7 @@ public class CommunityController {
         if (communityInfo == null ||
                 communityInfo.getTitle() == null ||
                 communityInfo.getContent() == null ||
-                communityInfo.getCategory() == null ||
-                communityInfo.getLatitude() == null ||
-                communityInfo.getLongitude() == null ||
-                communityInfo.getAddress() == null) {
+                communityInfo.getCategory() == null) {
             return ResponseEntity.badRequest().body(UserDto.CheckResult.builder().result("커뮤니티글 정보가 없습니다.").build());
         }
 

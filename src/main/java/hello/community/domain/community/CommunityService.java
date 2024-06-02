@@ -242,15 +242,6 @@ public class CommunityService {
         if (communityInfo.getCategory() != null) {
             community.setCategory(communityInfo.getCategory());
         }
-        if (communityInfo.getLatitude() != null) {
-            community.setLatitude(communityInfo.getLatitude());
-        }
-        if (communityInfo.getLongitude() != null) {
-            community.setLongitude(communityInfo.getLongitude());
-        }
-        if (communityInfo.getAddress() != null) {
-            community.setAddress(communityInfo.getAddress());
-        }
         if (url != null) {
             community.setPhoto(url);
         }
