@@ -100,6 +100,14 @@ public class CommunityService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Long userId = Long.parseLong(username);
+        Liked liked = likedRepository.findByUserIdAndCommunityId(userId, communityId);
+
+        boolean isLiked;
+        if (liked == null) {
+            isLiked = false;
+        } else {
+            isLiked = true;
+        }
 
         List<CommunityDto.CommentComponent> comments = byIdCommunityId.stream().map(comment -> {
             String whoComment = "other"; // 기본값은 "other"
@@ -137,6 +145,7 @@ public class CommunityService {
                 .createdAt(community.getCreatedAt())
                 .view(community.getView())
                 .likes(community.getLikes())
+                .isLiked(isLiked)
                 .comments(comments)
                 .build();
     }
