@@ -34,6 +34,7 @@ public class ChatService {
     private final UserChatRoomRepository userChatRoomRepository;
     private final ChatRepository chatRepository;
 
+    //원래대로 돌림
     // 모집글 상세 액티비티 하단의 손들기 버튼 클릭 시 대기자 테이블에 요청자에 대한 튜플 추가
     public void raiseHand(Long groupBuyId) {
         GroupBuy findedGroupBuy = groupBuyRepository.findById(groupBuyId)
