@@ -39,9 +39,11 @@ public class ChatController {
             description = "손들기 요청한 사용자의 정보를 배열로 조회합니다."
     )
     public ResponseEntity<List<WaitingNotificationDto>> getWaitingNotifications(@RequestHeader("Authorization") String token) {
-        List<WaitingNotificationDto> notifications = chatService.getWaitingNotifications(token);
+        String actualToken = token.replace("Bearer ", "");
+        List<WaitingNotificationDto> notifications = chatService.getWaitingNotifications(actualToken);
         return ResponseEntity.ok(notifications);
     }
+
 
     @PutMapping("/acceptWaiting/{waitingId}")
     @Operation(
@@ -59,7 +61,8 @@ public class ChatController {
             description = "사용자가 참여하고 있는 채팅방 목록을 조회합니다."
     )
     public ResponseEntity<List<ChatRoomListDto>> getChatRoomList(@RequestHeader("Authorization") String token) {
-        List<ChatRoomListDto> chatRooms = chatService.getChatRoomList(token);
+        String actualToken = token.replace("Bearer ", "");
+        List<ChatRoomListDto> chatRooms = chatService.getChatRoomList(actualToken);
         return ResponseEntity.ok(chatRooms);
     }
 
@@ -79,7 +82,8 @@ public class ChatController {
             description = "채팅방의 상세 채팅 기록을 조회합니다."
     )
     public ResponseEntity<List<ChatRecordDto>> getChatRecords(@PathVariable Long chatRoomId, @RequestHeader("Authorization") String token) {
-        List<ChatRecordDto> chatRecords = chatService.getChatRecords(chatRoomId, token);
+        String actualToken = token.replace("Bearer ", "");
+        List<ChatRecordDto> chatRecords = chatService.getChatRecords(chatRoomId, actualToken);
         return ResponseEntity.ok(chatRecords);
     }
 

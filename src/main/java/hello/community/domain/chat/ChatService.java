@@ -187,43 +187,50 @@ public class ChatService {
 
     // 채팅방 상세 기록 조회
     public List<ChatRecordDto> getChatRecords(Long chatRoomId, String token) {
+        Long userId;
         try {
-            Long userId = jwtService.getUserId(token);
-            Users currentUser = userRepository.findById(userId)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-            ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-                    .orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다."));
-
-            List<Chat> chats = chatRepository.findByChatRoomOrderByCreatedAtAsc(chatRoom);
-
-            List<ChatRecordDto> chatRecords = new ArrayList<>();
-            Long previousUserId = null;
-            String chatRoomTitle = chatRoom.getGroupBuy().getTitle(); // 채팅방 제목 가져오기
-
-            for (Chat chat : chats) {
-                boolean isContinuousMessage = previousUserId != null && previousUserId.equals(chat.getUser().getId());
-                boolean isMyMessage = chat.getUser().getId().equals(currentUser.getId());
-
-                chatRecords.add(new ChatRecordDto(
-                        chat.getUser().getPhoto(),
-                        chat.getUser().getName(),
-                        chat.getContent(),
-                        chat.getCreatedAt(),
-                        isContinuousMessage,
-                        isMyMessage,
-                        chatRoomTitle // 채팅방 제목 추가
-                ));
-
-                previousUserId = chat.getUser().getId();
-            }
-
-            return chatRecords;
+            userId = jwtService.getUserId(token);
         } catch (Exception e) {
-            logger.error("Error getting chat records", e);
-            throw new RuntimeException("Error getting chat records", e);
+            throw new RuntimeException("유효하지 않은 토큰입니다.", e);
         }
+
+        Users currentUser = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // chatRoomId가 null인 경우 예외 처리
+        if (chatRoomId == null) {
+            throw new IllegalArgumentException("채팅방 ID가 null입니다.");
+        }
+
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다."));
+
+        List<Chat> chats = chatRepository.findByChatRoomOrderByCreatedAtAsc(chatRoom);
+
+        List<ChatRecordDto> chatRecords = new ArrayList<>();
+        Long previousUserId = null;
+        String chatRoomTitle = chatRoom.getGroupBuy().getTitle(); // 채팅방 제목 가져오기
+
+        for (Chat chat : chats) {
+            boolean isContinuousMessage = previousUserId != null && previousUserId.equals(chat.getUser().getId());
+            boolean isMyMessage = chat.getUser().getId().equals(currentUser.getId());
+
+            chatRecords.add(new ChatRecordDto(
+                    chat.getUser().getPhoto(),
+                    chat.getUser().getName(),
+                    chat.getContent(),
+                    chat.getCreatedAt(),
+                    isContinuousMessage,
+                    isMyMessage,
+                    chatRoomTitle // 채팅방 제목 추가
+            ));
+
+            previousUserId = chat.getUser().getId();
+        }
+
+        return chatRecords;
     }
+
     // 채팅방 나가기
     @Transactional
     public void leaveChatRoom(Long chatRoomId, String token) {
