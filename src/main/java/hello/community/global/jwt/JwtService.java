@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -18,6 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 @Service
+@Slf4j
 public class JwtService {
 
     final String INVALID_JWT = "유효하지 않은 토큰입니다.";
@@ -57,7 +59,7 @@ public class JwtService {
     }
 
     //토큰에서 id 추출
-    public Long getUserId(String token) throws Exception{
+    public Long getUserId(String token) throws Exception {
         // 헤더에서 JWT 추출
         String accessToken = token;
         if(accessToken == null || accessToken.length() == 0){
@@ -75,8 +77,9 @@ public class JwtService {
         }
 
         // id 추출
-        return claims.getBody().get("id",Long.class);
+        return Long.parseLong(claims.getBody().getSubject());
     }
+
 
     public String validateTokenAndGetSubject(String token) {
         return Jwts.parserBuilder()

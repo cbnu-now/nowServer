@@ -29,7 +29,8 @@ public class ChatController {
             description = "모집글에 손을 들어 참여를 신청합니다."
     )
     public ResponseEntity<UserDto.CheckResult> raiseHand(@PathVariable Long groupBuyId, @RequestHeader("Authorization") String token) {
-        chatService.raiseHand(groupBuyId, token);
+        String actualToken = token.replace("Bearer ", "");
+        chatService.raiseHand(groupBuyId, actualToken);
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("손들기 완료").build());
     }
 
@@ -51,7 +52,8 @@ public class ChatController {
             description = "대기자의 손들기 요청을 수락합니다."
     )
     public ResponseEntity<UserDto.CheckResult> acceptWaiting(@PathVariable Long waitingId, @RequestHeader("Authorization") String token) {
-        chatService.acceptWaiting(waitingId, token);
+        String actualToken = token.replace("Bearer ", "");
+        chatService.acceptWaiting(waitingId, actualToken);
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("수락 완료").build());
     }
 
@@ -72,7 +74,8 @@ public class ChatController {
             description = "채팅방에 메시지를 전송합니다."
     )
     public ResponseEntity<UserDto.CheckResult> sendMessage(@PathVariable Long chatRoomId, @RequestBody ChatMessageDto chatMessageDto, @RequestHeader("Authorization") String token) {
-        chatService.sendMessage(chatRoomId, chatMessageDto, token);
+        String actualToken = token.replace("Bearer ", "");
+        chatService.sendMessage(chatRoomId, chatMessageDto, actualToken);
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("메시지 전송 완료").build());
     }
 
@@ -93,7 +96,8 @@ public class ChatController {
             description = "사용자가 특정 채팅방에서 나갑니다."
     )
     public ResponseEntity<UserDto.CheckResult> leaveChatRoom(@PathVariable Long chatRoomId, @RequestHeader("Authorization") String token) {
-        chatService.leaveChatRoom(chatRoomId, token);
+        String actualToken = token.replace("Bearer ", "");
+        chatService.leaveChatRoom(chatRoomId, actualToken);
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("채팅방 나가기 완료").build());
     }
 
