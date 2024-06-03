@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class ChatRoomListDto {
+    private Long id;  // id 필드 추가
     private List<String> userProfileImgUrls;
     private String groupBuyThumbnailUrl;
     private String chatRoomTitle;

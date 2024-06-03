@@ -68,6 +68,7 @@ public class ChatService {
             return groupBuys.stream().flatMap(groupBuy -> {
                 List<Waiting> waitings = waitingRepository.findByGroupBuyId(groupBuy.getId());
                 return waitings.stream().map(waiting -> new WaitingNotificationDto(
+                        waiting.getId(),  // id 추가
                         waiting.getUser().getName(),
                         waiting.getUser().getPhoto(),
                         groupBuy.getTitle(),
@@ -144,6 +145,7 @@ public class ChatService {
                 long unreadCount = chatRepository.countByChatRoomAndCreatedAtAfter(chatRoom, userChatRoom.getLastReadTime());
 
                 return new ChatRoomListDto(
+                        chatRoom.getId(),  // id 추가
                         participantImages,
                         groupBuy.getPhoto(),
                         groupBuy.getTitle(),
