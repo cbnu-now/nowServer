@@ -114,6 +114,7 @@ public class ChatService {
                     userChatRoom.setUser(acceptedWaiting.getUser());
                     userChatRoom.setChatRoom(chatRoom);
                     userChatRoomRepository.save(userChatRoom);
+                    waitingRepository.delete(acceptedWaiting); // 대기 테이블에서 제거
                 }
 
                 // 파티장도 채팅방에 추가
@@ -121,6 +122,9 @@ public class ChatService {
                 ownerChatRoom.setUser(groupBuy.getUser());
                 ownerChatRoom.setChatRoom(chatRoom);
                 userChatRoomRepository.save(ownerChatRoom);
+            } else {
+                // 대기열에서 유저 제거
+                waitingRepository.delete(waiting);
             }
         } catch (Exception e) {
             logger.error("Error accepting waiting", e);
