@@ -33,11 +33,10 @@ public class ChatService {
     private final ChatRepository chatRepository;
     private final JwtService jwtService;
 
-    //원래대로 돌림
+
     // 모집글 상세 액티비티 하단의 손들기 버튼 클릭 시 대기자 테이블에 요청자에 대한 튜플 추가
-    public void raiseHand(Long groupBuyId, String token) {
+    public void raiseHand(Long groupBuyId, Long userId) {
         try {
-            Long userId = jwtService.getUserId(token);
             Users user = userRepository.findById(userId)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -59,16 +58,14 @@ public class ChatService {
     }
 
     // 알림 목록 액티비티 내에서 손들기를 요청한 사용자의 정보를 배열로 조회
-    public List<WaitingNotificationDto> getWaitingNotifications(String token) {
+    public List<WaitingNotificationDto> getWaitingNotifications(Long userId) {
         try {
-            Long userId = jwtService.getUserId(token);
-
             List<GroupBuy> groupBuys = groupBuyRepository.findByUserId(userId);
 
             return groupBuys.stream().flatMap(groupBuy -> {
                 List<Waiting> waitings = waitingRepository.findByGroupBuyId(groupBuy.getId());
                 return waitings.stream().map(waiting -> new WaitingNotificationDto(
-                        waiting.getId(),  // id 추가
+                        waiting.getId(),
                         waiting.getUser().getName(),
                         waiting.getUser().getPhoto(),
                         groupBuy.getTitle(),
@@ -85,10 +82,8 @@ public class ChatService {
     }
 
     // 손들기 수락 & 채팅방 생성
-    public void acceptWaiting(Long waitingId, String token) {
+    public void acceptWaiting(Long waitingId, Long userId) {
         try {
-            Long userId = jwtService.getUserId(token);
-
             // 대기자 수락 로직
             Waiting waiting = waitingRepository.findById(waitingId)
                     .orElseThrow(() -> new IllegalArgumentException("해당 대기자가 존재하지 않습니다."));
@@ -134,9 +129,8 @@ public class ChatService {
 
     // 채팅방 목록 액티비티 내에 채팅방 정보 목록이 배열로 조회
     // 채팅방 목록 조회 메서드 추가
-    public List<ChatRoomListDto> getChatRoomList(String token) {
+    public List<ChatRoomListDto> getChatRoomList(Long userId) {
         try {
-            Long userId = jwtService.getUserId(token);
             List<UserChatRoom> userChatRooms = userChatRoomRepository.findByUserId(userId);
 
             return userChatRooms.stream().map(userChatRoom -> {
@@ -149,7 +143,7 @@ public class ChatService {
                 long unreadCount = chatRepository.countByChatRoomAndCreatedAtAfter(chatRoom, userChatRoom.getLastReadTime());
 
                 return new ChatRoomListDto(
-                        chatRoom.getId(),  // id 추가
+                        chatRoom.getId(),
                         participantImages,
                         groupBuy.getPhoto(),
                         groupBuy.getTitle(),
@@ -166,9 +160,8 @@ public class ChatService {
     }
 
     // 채팅 메시지 전송
-    public void sendMessage(Long chatRoomId, ChatMessageDto chatMessageDto, String token) {
+    public void sendMessage(Long chatRoomId, ChatMessageDto chatMessageDto, Long userId) {
         try {
-            Long userId = jwtService.getUserId(token);
             Users user = userRepository.findById(userId)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -193,18 +186,11 @@ public class ChatService {
     }
 
     // 채팅방 상세 기록 조회
-    public List<ChatRecordDto> getChatRecords(Long chatRoomId, String token) {
-        Long userId;
-        try {
-            userId = jwtService.getUserId(token);
-        } catch (Exception e) {
-            throw new RuntimeException("유효하지 않은 토큰입니다.", e);
-        }
-
+    // 채팅방 상세 기록 조회
+    public List<ChatRecordDto> getChatRecords(Long chatRoomId, Long userId) {
         Users currentUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        // chatRoomId가 null인 경우 예외 처리
         if (chatRoomId == null) {
             throw new IllegalArgumentException("채팅방 ID가 null입니다.");
         }
@@ -240,9 +226,8 @@ public class ChatService {
 
     // 채팅방 나가기
     @Transactional
-    public void leaveChatRoom(Long chatRoomId, String token) {
+    public void leaveChatRoom(Long chatRoomId, Long userId) {
         try {
-            Long userId = jwtService.getUserId(token);
             Optional<UserChatRoom> optionalUserChatRoom = userChatRoomRepository.findByUserIdAndChatRoomId(userId, chatRoomId);
             UserChatRoom userChatRoom = optionalUserChatRoom.orElseThrow(() -> new IllegalArgumentException("해당 채팅방에 사용자가 존재하지 않습니다."));
 
