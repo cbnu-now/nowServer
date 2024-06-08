@@ -89,6 +89,11 @@ public class ChatService {
                     .orElseThrow(() -> new IllegalArgumentException("해당 대기자가 존재하지 않습니다."));
             GroupBuy groupBuy = waiting.getGroupBuy();
 
+            // 채팅방이 이미 생성된 경우 예외 처리
+            if (groupBuy.getCurrentCount() >= groupBuy.getHeadCount()) {
+                throw new IllegalStateException("모집이 완료되어 손들기 수락을 할 수 없습니다.");
+            }
+
             waiting.setAccepted(true); // 상태 변경
             waitingRepository.save(waiting);
 
