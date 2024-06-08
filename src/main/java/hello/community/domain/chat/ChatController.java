@@ -102,16 +102,16 @@ public class ChatController {
         return ResponseEntity.ok(UserDto.CheckResult.builder().result("채팅방 나가기 완료").build());
     }
 
-    // 손들기 거절 API 추가
-    @DeleteMapping("/rejectWaiting/{waitingId}")
+    @DeleteMapping("/declineWaiting/{waitingId}")
     @Operation(
             summary = "손들기 거절",
-            description = "대기자의 손들기 요청을 거절합니다."
+            description = "방장이 손들기 요청을 거절합니다."
     )
-    public ResponseEntity<UserDto.CheckResult> rejectWaiting(@PathVariable Long waitingId, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<UserDto.CheckResult> declineWaiting(@PathVariable Long waitingId, @AuthenticationPrincipal UserDetails userDetails) {
         Long userId = Long.parseLong(userDetails.getUsername());
-        chatService.rejectWaiting(waitingId, userId);
-        return ResponseEntity.ok(UserDto.CheckResult.builder().result("거절 완료").build());
+        chatService.declineWaiting(waitingId, userId);
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("손들기 거절 완료").build());
     }
+
 
 }

@@ -265,4 +265,22 @@ public class ChatService {
         }
     }
 
+    // 손들기 거절 메서드 추가 (이름 변경)
+    public void declineWaiting(Long waitingId, Long userId) {
+        try {
+            // 대기자 거절 로직
+            Waiting waiting = waitingRepository.findById(waitingId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 대기자가 존재하지 않습니다."));
+            if (!waiting.getGroupBuy().getUser().getId().equals(userId)) {
+                throw new IllegalArgumentException("손들기를 거절할 권한이 없습니다.");
+            }
+            waitingRepository.delete(waiting);
+        } catch (Exception e) {
+            logger.error("Error declining waiting", e);
+            throw new RuntimeException("Error declining waiting", e);
+        }
+    }
+
+
+
 }
