@@ -81,6 +81,7 @@ public class GroupBuyService {
 
         // 모집 완료 여부 체크
         groupBuy.checkAndSetCompleted();
+        groupBuyRepository.save(groupBuy); // 상태 변경을 저장
 
         GroupBuyDto.viewGroupBuyInfo viewGroupBuyInfo = GroupBuyDto.viewGroupBuyInfo.builder()
                 .latitude(groupBuy.getLatitude())
