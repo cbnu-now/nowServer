@@ -47,6 +47,12 @@ public class ChatService {
                 throw new IllegalArgumentException("본인이 작성한 모집글에는 참여할 수 없습니다.");
             }
 
+            // 중복 손들기 요청 방지
+            Optional<Waiting> existingWaiting = waitingRepository.findByGroupBuyIdAndUserId(groupBuyId, userId);
+            if (existingWaiting.isPresent()) {
+                throw new IllegalStateException("이미 해당 모집글에 손들기 요청을 하였습니다.");
+            }
+
             Waiting waiting = new Waiting();
             waiting.setUser(user);
             waiting.setGroupBuy(findedGroupBuy);
