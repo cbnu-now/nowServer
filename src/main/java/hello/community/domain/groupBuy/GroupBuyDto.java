@@ -48,6 +48,8 @@ public class GroupBuyDto {
 
         private Long view;
         private Long likes;
+
+        private boolean isCompleted; // 모집 완료 여부 필드 추가
     }
 
     @Builder

@@ -3,6 +3,12 @@ package hello.community.domain.groupBuy;
 import hello.community.domain.liked.Liked;
 import hello.community.domain.liked.LikedRepository;
 import hello.community.domain.user.UserRepository;
+import hello.community.domain.chat.ChatRoomRepository;
+import hello.community.domain.chat.UserChatRoomRepository;
+import hello.community.domain.chat.WaitingRepository;
+import hello.community.domain.chat.ChatRoom;
+import hello.community.domain.chat.Waiting;
+import hello.community.domain.chat.UserChatRoom;
 import hello.community.domain.user.Users;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -24,6 +30,9 @@ public class GroupBuyService {
     private final GroupBuyRepository groupBuyRepository;
     private final UserRepository userRepository;
     private final LikedRepository likedRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final UserChatRoomRepository userChatRoomRepository;
+    private final WaitingRepository waitingRepository;
 
     public void createGroupBuy(GroupBuyDto.GroupBuyInfo groupBuyInfo, String url) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -70,6 +79,8 @@ public class GroupBuyService {
             isLiked = true;
         }
 
+        // 모집 완료 여부 체크
+        groupBuy.checkAndSetCompleted();
 
         GroupBuyDto.viewGroupBuyInfo viewGroupBuyInfo = GroupBuyDto.viewGroupBuyInfo.builder()
                 .latitude(groupBuy.getLatitude())
@@ -89,11 +100,47 @@ public class GroupBuyService {
                 .currentCount(groupBuy.getCurrentCount())
                 .view(groupBuy.getView())
                 .likes(groupBuy.getLikes())
+                .isCompleted(groupBuy.isCompleted()) // 모집 완료 여부 추가
                 .build();
 
 
         return viewGroupBuyInfo;
 
+    }
+
+    // 조기 마감 메서드 추가
+    public void closeEarly(Long groupBuyId) {
+        GroupBuy groupBuy = groupBuyRepository.findById(groupBuyId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 모집글이 존재하지 않습니다."));
+
+        // 조기 마감 처리
+        groupBuy.closeEarly();
+        groupBuyRepository.save(groupBuy);
+
+        // 현재 모집된 인원으로 채팅방 생성
+        createChatRoomForGroupBuy(groupBuy);
+    }
+
+    private void createChatRoomForGroupBuy(GroupBuy groupBuy) {
+        // 채팅방 생성
+        ChatRoom chatRoom = new ChatRoom();
+        chatRoom.setGroupBuy(groupBuy);
+        chatRoomRepository.save(chatRoom);
+
+        // 모집된 인원을 채팅방에 추가
+        List<Waiting> acceptedWaitings = waitingRepository.findByGroupBuyIdAndAccepted(groupBuy.getId(), true);
+        for (Waiting acceptedWaiting : acceptedWaitings) {
+            UserChatRoom userChatRoom = new UserChatRoom();
+            userChatRoom.setUser(acceptedWaiting.getUser());
+            userChatRoom.setChatRoom(chatRoom);
+            userChatRoomRepository.save(userChatRoom);
+        }
+
+        // 파티장도 채팅방에 추가
+        UserChatRoom ownerChatRoom = new UserChatRoom();
+        ownerChatRoom.setUser(groupBuy.getUser());
+        ownerChatRoom.setChatRoom(chatRoom);
+        userChatRoomRepository.save(ownerChatRoom);
     }
 
     public List<GroupBuyDto.viewGroupBuyListInfo> getGroupBuyListByLocation(Double latitude, Double longitude,Long distance2) {

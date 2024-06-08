@@ -138,6 +138,22 @@ public class ChatService {
         }
     }
 
+    // 손들기 거절 메서드 추가
+    public void rejectWaiting(Long waitingId, Long userId) {
+        try {
+            // 대기자 거절 로직
+            Waiting waiting = waitingRepository.findById(waitingId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 대기자가 존재하지 않습니다."));
+            if (!waiting.getGroupBuy().getUser().getId().equals(userId)) {
+                throw new IllegalArgumentException("손들기를 거절할 권한이 없습니다.");
+            }
+            waitingRepository.delete(waiting);
+        } catch (Exception e) {
+            logger.error("Error rejecting waiting", e);
+            throw new RuntimeException("Error rejecting waiting", e);
+        }
+    }
+
     // 채팅방 목록 액티비티 내에 채팅방 정보 목록이 배열로 조회
     // 채팅방 목록 조회 메서드 추가
     public List<ChatRoomListDto> getChatRoomList(Long userId) {

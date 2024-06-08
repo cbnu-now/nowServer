@@ -64,6 +64,7 @@ public class GroupBuyController {
     }
 
 
+    // 모집글 조회 API 수정
     @GetMapping("/groupbuy/{groupBuyId}")
     @Operation(
             summary = "모집글 조회",
@@ -71,6 +72,17 @@ public class GroupBuyController {
     )
     public ResponseEntity<GroupBuyDto.viewGroupBuyInfo> getGroupBuy(@PathVariable Long groupBuyId) {
         return ResponseEntity.ok(groupBuyService.getGroupBuy(groupBuyId));
+    }
+
+    // 조기 마감 API 추가
+    @PutMapping("/groupbuy/{groupBuyId}/close")
+    @Operation(
+            summary = "모집 조기 마감",
+            description = "모집글을 조기 마감합니다."
+    )
+    public ResponseEntity<UserDto.CheckResult> closeEarly(@PathVariable Long groupBuyId) {
+        groupBuyService.closeEarly(groupBuyId);
+        return ResponseEntity.ok(UserDto.CheckResult.builder().result("조기 마감 완료").build());
     }
 
 
