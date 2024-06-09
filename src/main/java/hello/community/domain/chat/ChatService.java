@@ -110,8 +110,8 @@ public class ChatService {
                 createChatRoomForGroupBuy(groupBuy);
             }
 
-            // 수락된 유저는 손들기 알림 목록에서 제거
-            waitingRepository.deleteById(waitingId);
+            // 수락된 유저는 손들기 알림 목록에서 제거 //이거 제거하면 채팅방에 사람들 다 생기는 듯
+            //waitingRepository.deleteById(waitingId);
 
         } catch (Exception e) {
             logger.error("Error accepting waiting", e);
