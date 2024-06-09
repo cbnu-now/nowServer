@@ -25,4 +25,5 @@ public class UserChatRoom {
     private ChatRoom chatRoom;
 
     private LocalDateTime lastReadTime;
+    private int unreadMessageCount; // 미읽은 메시지 카운트 추가
 }

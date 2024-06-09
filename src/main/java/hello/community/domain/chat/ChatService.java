@@ -202,17 +202,21 @@ public class ChatService {
             chat.setChatRoom(chatRoom);
             chatRepository.save(chat);
 
-            Optional<UserChatRoom> optionalUserChatRoom = userChatRoomRepository.findByUserIdAndChatRoomId(userId, chatRoomId);
-            UserChatRoom userChatRoom = optionalUserChatRoom.orElseThrow(() -> new IllegalArgumentException("해당 채팅방에 사용자가 존재하지 않습니다."));
-            userChatRoom.setLastReadTime(LocalDateTime.now());
-            userChatRoomRepository.save(userChatRoom);
+            List<UserChatRoom> userChatRooms = userChatRoomRepository.findByChatRoomId(chatRoomId);
+            for (UserChatRoom userChatRoom : userChatRooms) {
+                if (!userChatRoom.getUser().getId().equals(userId)) {
+                    userChatRoom.setUnreadMessageCount(userChatRoom.getUnreadMessageCount() + 1);
+                }
+                userChatRoom.setLastReadTime(LocalDateTime.now());
+                userChatRoomRepository.save(userChatRoom);
+            }
         } catch (Exception e) {
             logger.error("Error sending message", e);
             throw new RuntimeException("Error sending message", e);
         }
     }
 
-    // 채팅방 상세 기록 조회
+
     // 채팅방 상세 기록 조회
     public List<ChatRecordDto> getChatRecords(Long chatRoomId, Long userId) {
         Users currentUser = userRepository.findById(userId)
@@ -247,6 +251,13 @@ public class ChatService {
 
             previousUserId = chat.getUser().getId();
         }
+
+        // 마지막 메시지 읽음 시간 및 미읽은 메시지 카운트 초기화
+        Optional<UserChatRoom> optionalUserChatRoom = userChatRoomRepository.findByUserIdAndChatRoomId(userId, chatRoomId);
+        UserChatRoom userChatRoom = optionalUserChatRoom.orElseThrow(() -> new IllegalArgumentException("해당 채팅방에 사용자가 존재하지 않습니다."));
+        userChatRoom.setLastReadTime(LocalDateTime.now());
+        userChatRoom.setUnreadMessageCount(0); // 미읽은 메시지 카운트 초기화
+        userChatRoomRepository.save(userChatRoom);
 
         return chatRecords;
     }
