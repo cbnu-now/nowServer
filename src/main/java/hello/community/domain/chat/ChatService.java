@@ -87,55 +87,58 @@ public class ChatService {
         }
     }
 
-    // 손들기 수락 & 채팅방 생성
+    // 손들기 수락 & 채팅방 생성 메서드 수정
     public void acceptWaiting(Long waitingId, Long userId) {
         try {
-            // 대기자 수락 로직
             Waiting waiting = waitingRepository.findById(waitingId)
                     .orElseThrow(() -> new IllegalArgumentException("해당 대기자가 존재하지 않습니다."));
             GroupBuy groupBuy = waiting.getGroupBuy();
 
-            // 채팅방이 이미 생성된 경우 예외 처리
-            if (groupBuy.getCurrentCount() >= groupBuy.getHeadCount()) {
+            // 모집 완료 상태 체크
+            if (groupBuy.isCompleted()) {
                 throw new IllegalStateException("모집이 완료되어 손들기 수락을 할 수 없습니다.");
             }
 
-            waiting.setAccepted(true); // 상태 변경
+            waiting.setAccepted(true);
             waitingRepository.save(waiting);
 
-            // 현재 인원 수 업데이트
             groupBuy.setCurrentCount(groupBuy.getCurrentCount() + 1);
             groupBuyRepository.save(groupBuy);
 
             // 채팅방 생성 조건 확인 및 생성
-            if (groupBuy.getCurrentCount() == groupBuy.getHeadCount()) {
-                ChatRoom chatRoom = new ChatRoom();
-                chatRoom.setGroupBuy(groupBuy);
-                chatRoomRepository.save(chatRoom);
-
-                // 채팅방에 사용자 추가
-                List<Waiting> acceptedWaitings = waitingRepository.findByGroupBuyIdAndAccepted(groupBuy.getId(), true);
-                for (Waiting acceptedWaiting : acceptedWaitings) {
-                    UserChatRoom userChatRoom = new UserChatRoom();
-                    userChatRoom.setUser(acceptedWaiting.getUser());
-                    userChatRoom.setChatRoom(chatRoom);
-                    userChatRoomRepository.save(userChatRoom);
-                    waitingRepository.delete(acceptedWaiting); // 대기 테이블에서 제거
-                }
-
-                // 파티장도 채팅방에 추가
-                UserChatRoom ownerChatRoom = new UserChatRoom();
-                ownerChatRoom.setUser(groupBuy.getUser());
-                ownerChatRoom.setChatRoom(chatRoom);
-                userChatRoomRepository.save(ownerChatRoom);
-            } else {
-                // 대기열에서 유저 제거
-                waitingRepository.delete(waiting);
+            if (groupBuy.getCurrentCount() >= groupBuy.getHeadCount()) {
+                createChatRoomForGroupBuy(groupBuy);
             }
+
+            // 수락된 유저는 손들기 알림 목록에서 제거
+            waitingRepository.deleteById(waitingId);
+
         } catch (Exception e) {
             logger.error("Error accepting waiting", e);
             throw new RuntimeException("Error accepting waiting", e);
         }
+    }
+
+    // 채팅방 생성 메서드
+    public void createChatRoomForGroupBuy(GroupBuy groupBuy) {
+        ChatRoom chatRoom = new ChatRoom();
+        chatRoom.setGroupBuy(groupBuy);
+        chatRoomRepository.save(chatRoom);
+
+        // 모집된 인원을 채팅방에 추가
+        List<Waiting> acceptedWaitings = waitingRepository.findByGroupBuyIdAndAccepted(groupBuy.getId(), true);
+        for (Waiting acceptedWaiting : acceptedWaitings) {
+            UserChatRoom userChatRoom = new UserChatRoom();
+            userChatRoom.setUser(acceptedWaiting.getUser());
+            userChatRoom.setChatRoom(chatRoom);
+            userChatRoomRepository.save(userChatRoom);
+        }
+
+        // 파티장도 채팅방에 추가
+        UserChatRoom ownerChatRoom = new UserChatRoom();
+        ownerChatRoom.setUser(groupBuy.getUser());
+        ownerChatRoom.setChatRoom(chatRoom);
+        userChatRoomRepository.save(ownerChatRoom);
     }
 
     // 손들기 거절 메서드 추가
