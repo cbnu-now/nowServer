@@ -105,13 +105,13 @@ public class ChatService {
             groupBuy.setCurrentCount(groupBuy.getCurrentCount() + 1);
             groupBuyRepository.save(groupBuy);
 
+            // 수락된 유저는 손들기 알림 목록에서 제거
+            waitingRepository.deleteById(waitingId);
+
             // 채팅방 생성 조건 확인 및 생성
             if (groupBuy.getCurrentCount() >= groupBuy.getHeadCount()) {
                 createChatRoomForGroupBuy(groupBuy);
             }
-
-            // 수락된 유저는 손들기 알림 목록에서 제거 //이거 제거하면 채팅방에 사람들 다 생기는 듯
-            //waitingRepository.deleteById(waitingId);
 
         } catch (Exception e) {
             logger.error("Error accepting waiting", e);
