@@ -106,7 +106,7 @@ public class ChatService {
             groupBuyRepository.save(groupBuy);
 
             // 수락된 유저는 손들기 알림 목록에서 제거
-            waitingRepository.deleteById(waitingId);
+            //waitingRepository.deleteById(waitingId);
 
             // 채팅방 생성 조건 확인 및 생성
             if (groupBuy.getCurrentCount() >= groupBuy.getHeadCount()) {
@@ -180,7 +180,7 @@ public class ChatService {
                         chatRoom.getUserChatRooms().size(),
                         lastChat != null ? lastChat.getContent() : "",
                         lastChat != null ? lastChat.getCreatedAt() : null,
-                        (int) unreadCount
+                        userChatRoom.getUnreadMessageCount()
                 );
             }).collect(Collectors.toList());
         } catch (Exception e) {
@@ -210,7 +210,9 @@ public class ChatService {
                 if (!userChatRoom.getUser().getId().equals(userId)) {
                     userChatRoom.setUnreadMessageCount(userChatRoom.getUnreadMessageCount() + 1);
                 }
-                userChatRoom.setLastReadTime(LocalDateTime.now());
+
+                // 메시지 전송 시에는 lastReadTime을 업데이트하지 않음
+                //userChatRoom.setLastReadTime(LocalDateTime.now());
                 userChatRoomRepository.save(userChatRoom);
             }
         } catch (Exception e) {
