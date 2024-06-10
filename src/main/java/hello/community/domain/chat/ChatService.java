@@ -70,6 +70,10 @@ public class ChatService {
 
             return groupBuys.stream().flatMap(groupBuy -> {
                 List<Waiting> waitings = waitingRepository.findByGroupBuyId(groupBuy.getId());
+
+                // accept가 false인 대기자만 조회
+                waitings = waitings.stream().filter(waiting -> !waiting.isAccepted()).collect(Collectors.toList());
+
                 return waitings.stream().map(waiting -> new WaitingNotificationDto(
                         waiting.getId(),
                         waiting.getUser().getName(),
