@@ -50,7 +50,7 @@ public class GroupBuy {
     @OneToMany(mappedBy = "groupBuy", cascade = CascadeType.ALL)
     private List<Waiting> waiting = new ArrayList<>();
 
-    private boolean isCompleted = false; // 모집 완료 여부를 나타내는 필드
+    public boolean isCompleted = false; // 모집 완료 여부를 나타내는 필드
 
     // 모집 완료 여부를 체크하고 설정하는 메서드
     public void checkAndSetCompleted() {

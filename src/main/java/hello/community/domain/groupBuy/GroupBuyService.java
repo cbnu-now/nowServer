@@ -82,7 +82,6 @@ public class GroupBuyService {
         }
 
         // 모집 완료 여부 체크
-        groupBuy.checkAndSetCompleted();
         groupBuyRepository.save(groupBuy); // 상태 변경을 저장
 
         GroupBuyDto.viewGroupBuyInfo viewGroupBuyInfo = GroupBuyDto.viewGroupBuyInfo.builder()
@@ -103,7 +102,7 @@ public class GroupBuyService {
                 .currentCount(groupBuy.getCurrentCount())
                 .view(groupBuy.getView())
                 .likes(groupBuy.getLikes())
-                .isCompleted(groupBuy.isCompleted()) // 모집 완료 여부 추가
+                .isCompleted(groupBuy.isCompleted) // 모집 완료 여부 추가
                 .build();
 
 
@@ -117,6 +116,11 @@ public class GroupBuyService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 모집글이 존재하지 않습니다."));
 
         groupBuy.closeEarly();
+        //groupBuy.setCompleted(true); // 조기 마감 시 completed 값을 true로 설정 없어도 됌
+        System.out.println("debugging \n\n");
+        System.out.println(groupBuy);
+        System.out.println(groupBuy.isCompleted);
+        System.out.println("debugging \n\n");
         groupBuyRepository.save(groupBuy);
 
         // ChatService를 사용하여 채팅방을 생성합니다.

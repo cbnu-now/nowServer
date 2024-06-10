@@ -110,6 +110,8 @@ public class ChatService {
 
             // 채팅방 생성 조건 확인 및 생성
             if (groupBuy.getCurrentCount() >= groupBuy.getHeadCount()) {
+//                groupBuy.setCompleted(true);
+//                groupBuyRepository.save(groupBuy);
                 createChatRoomForGroupBuy(groupBuy);
             }
 
